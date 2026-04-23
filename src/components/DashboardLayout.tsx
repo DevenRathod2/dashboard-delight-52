@@ -1,23 +1,24 @@
 import { ReactNode } from "react";
-import { LayoutDashboard, Users, MessageSquare, Calendar, CreditCard, Camera, FolderOpen, Settings, LogOut, HelpCircle, Search, Bell, Sun, Plus } from "lucide-react";
+import { LayoutDashboard, Users, MessageSquare, Calendar, CreditCard, Camera, FolderOpen, Settings, LogOut, HelpCircle, Search, Bell, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { NavLink } from "@/components/NavLink";
 
 const navItems = [
-  { icon: LayoutDashboard, label: "Dashboard" },
-  { icon: Users, label: "Clients" },
-  { icon: MessageSquare, label: "Leads" },
-  { icon: Calendar, label: "Events", active: true },
-  { icon: CreditCard, label: "Billing" },
-  { icon: Camera, label: "Studio" },
-  { icon: FolderOpen, label: "Portfolio" },
+  { icon: LayoutDashboard, label: "Dashboard", to: "/" },
+  { icon: Users, label: "Clients", to: "/clients" },
+  { icon: MessageSquare, label: "Leads", to: "/leads" },
+  { icon: Calendar, label: "Events", to: "/events" },
+  { icon: CreditCard, label: "Billing", to: "/billing" },
+  { icon: Camera, label: "Studio", to: "/studio" },
+  { icon: FolderOpen, label: "Portfolio", to: "/portfolio" },
 ];
 
 export const DashboardLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="min-h-screen flex w-full bg-background text-foreground">
       {/* Sidebar */}
-      <aside className="hidden lg:flex w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar/80 backdrop-blur-xl">
+      <aside className="hidden lg:flex w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar/80 backdrop-blur-xl sticky top-0 h-screen">
         <div className="px-6 py-6 flex items-center gap-2.5">
           <div className="size-9 rounded-xl gradient-primary grid place-items-center shadow-glow">
             <Camera className="size-5 text-primary-foreground" />
@@ -28,19 +29,18 @@ export const DashboardLayout = ({ children }: { children: ReactNode }) => {
           </div>
         </div>
 
-        <nav className="flex-1 px-3 py-2 space-y-1">
+        <nav className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
           {navItems.map((item) => (
-            <button
+            <NavLink
               key={item.label}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ${
-                item.active
-                  ? "bg-gradient-primary text-primary-foreground shadow-glow"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-              }`}
+              to={item.to}
+              end={item.to === "/"}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+              activeClassName="!bg-gradient-primary !text-primary-foreground shadow-glow"
             >
               <item.icon className="size-[18px]" />
               {item.label}
-            </button>
+            </NavLink>
           ))}
         </nav>
 
