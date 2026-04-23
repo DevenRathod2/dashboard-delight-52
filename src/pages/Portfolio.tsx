@@ -2,7 +2,12 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Eye, Upload, Image as ImageIcon, Instagram, Facebook, Twitter, Linkedin, X, Camera } from "lucide-react";
+import { Eye, Upload, Image as ImageIcon, X, Camera, AtSign, Globe, Hash, Link2 } from "lucide-react";
+
+const Instagram = AtSign;
+const Facebook = Globe;
+const Twitter = Hash;
+const Linkedin = Link2;
 
 const styles = ["Video", "Photo", "Wedding", "Pre Wedding", "Birthday", "Corporate"];
 
