@@ -1,8 +1,9 @@
 import { ReactNode } from "react";
-import { LayoutDashboard, Users, MessageSquare, Calendar, CreditCard, Camera, FolderOpen, Settings, LogOut, HelpCircle, Search, Bell, Sun } from "lucide-react";
+import { LayoutDashboard, Users, MessageSquare, Calendar, CreditCard, Camera, FolderOpen, Settings, LogOut, HelpCircle, Search, Bell, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NavLink } from "@/components/NavLink";
+import { useTheme } from "@/hooks/use-theme";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", to: "/" },
@@ -15,6 +16,7 @@ const navItems = [
 ];
 
 export const DashboardLayout = ({ children }: { children: ReactNode }) => {
+  const { theme, toggleTheme } = useTheme();
   return (
     <div className="min-h-screen flex w-full bg-background text-foreground">
       {/* Sidebar */}
@@ -91,8 +93,12 @@ export const DashboardLayout = ({ children }: { children: ReactNode }) => {
                 ⭐ Upgrade
               </Button>
 
-              <button className="size-10 rounded-xl bg-secondary/60 border border-border/60 grid place-items-center hover:bg-secondary transition-colors">
-                <Sun className="size-4" />
+              <button
+                onClick={toggleTheme}
+                aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+                className="size-10 rounded-xl bg-secondary/60 border border-border/60 grid place-items-center hover:bg-secondary transition-colors"
+              >
+                {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
               </button>
               <button className="size-10 rounded-xl bg-secondary/60 border border-border/60 grid place-items-center hover:bg-secondary transition-colors relative">
                 <Bell className="size-4" />
