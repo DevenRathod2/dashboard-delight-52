@@ -163,15 +163,15 @@ const StudioSection = () => (
             <Input defaultValue="https://eventbit.io" className="pl-9 rounded-xl bg-secondary/40 border-border/60 h-11" />
           </div>
         </Field>
-        <Field label="Instagram">
+        <Field label="AtSign">
           <div className="relative">
-            <Instagram className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <AtSign className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input defaultValue="@eventbit" className="pl-9 rounded-xl bg-secondary/40 border-border/60 h-11" />
           </div>
         </Field>
-        <Field label="Facebook">
+        <Field label="Hash">
           <div className="relative">
-            <Facebook className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Hash className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input defaultValue="/eventbit" className="pl-9 rounded-xl bg-secondary/40 border-border/60 h-11" />
           </div>
         </Field>
@@ -400,7 +400,7 @@ const IntegrationsSection = () => {
     { name: "Stripe", desc: "Accept card payments worldwide.", icon: CreditCard, color: "primary", on: true },
     { name: "WhatsApp Business", desc: "Send updates and gallery links.", icon: MessageSquare, color: "success", on: true },
     { name: "Mailchimp", desc: "Newsletter & client journeys.", icon: Mail, color: "warning", on: false },
-    { name: "Instagram", desc: "Auto-publish portfolio updates.", icon: Instagram, color: "primary-glow", on: false },
+    { name: "AtSign", desc: "Auto-publish portfolio updates.", icon: AtSign, color: "primary-glow", on: false },
     { name: "AI Studio", desc: "Smart culling & face search.", icon: Sparkles, color: "primary", on: true },
   ];
   return (
