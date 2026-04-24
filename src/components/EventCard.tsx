@@ -1,4 +1,5 @@
 import { Calendar, User, Share2, MoreHorizontal, Edit3, ImageIcon, ArrowUpRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -12,6 +13,7 @@ export interface EventCardProps {
   image?: string;
   photos?: number;
   progress?: number;
+  id?: string;
 }
 
 const statusStyles: Record<EventStatus, string> = {
@@ -21,7 +23,7 @@ const statusStyles: Record<EventStatus, string> = {
   "Completed": "bg-success/15 text-success border-success/30",
 };
 
-export const EventCard = ({ title, date, client, status, image, photos = 0, progress = 0 }: EventCardProps) => {
+export const EventCard = ({ title, date, client, status, image, photos = 0, progress = 0, id = "1" }: EventCardProps) => {
   return (
     <article className="group relative rounded-3xl overflow-hidden bg-gradient-card border border-border/60 shadow-card hover:shadow-elevated transition-all duration-500 hover:-translate-y-1 animate-fade-up">
       {/* Glow ring on hover */}
@@ -108,9 +110,11 @@ export const EventCard = ({ title, date, client, status, image, photos = 0, prog
 
         {/* Actions */}
         <div className="flex items-center gap-2 pt-1">
-          <Button size="sm" className="flex-1 rounded-xl bg-secondary text-foreground hover:bg-gradient-primary hover:text-primary-foreground border border-border/60 transition-all">
-            View Details
-            <ArrowUpRight className="size-3.5 ml-1" />
+          <Button asChild size="sm" className="flex-1 rounded-xl bg-secondary text-foreground hover:bg-gradient-primary hover:text-primary-foreground border border-border/60 transition-all">
+            <Link to={`/events/${id}`}>
+              View Details
+              <ArrowUpRight className="size-3.5 ml-1" />
+            </Link>
           </Button>
           <Button size="sm" variant="ghost" className="rounded-xl border border-border/60 hover:bg-secondary">
             <Share2 className="size-3.5 mr-1.5" /> Share
