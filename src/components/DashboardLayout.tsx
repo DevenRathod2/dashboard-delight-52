@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { LayoutDashboard, Users, MessageSquare, Calendar, CreditCard, Camera, FolderOpen, Settings, LogOut, HelpCircle, Search, Bell, Sun, Moon } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NavLink } from "@/components/NavLink";
@@ -58,9 +59,9 @@ export const DashboardLayout = ({ children }: { children: ReactNode }) => {
         </div>
 
         <div className="border-t border-sidebar-border p-3 space-y-1">
-          <button className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-sidebar-foreground hover:bg-sidebar-accent transition-colors">
+          <Link to="/settings" className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-sidebar-foreground hover:bg-sidebar-accent transition-colors">
             <Settings className="size-[18px]" /> Settings
-          </button>
+          </Link>
           <button className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-sidebar-foreground hover:bg-sidebar-accent transition-colors">
             <LogOut className="size-[18px]" /> Log out
           </button>
