@@ -13,6 +13,7 @@ import Studio from "./pages/Studio.tsx";
 import Portfolio from "./pages/Portfolio.tsx";
 import EventDetail from "./pages/EventDetail.tsx";
 import CollectionPhotos from "./pages/CollectionPhotos.tsx";
+import Settings from "./pages/Settings.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="/billing" element={<Billing />} />
           <Route path="/studio" element={<Studio />} />
           <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/settings" element={<Settings />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
