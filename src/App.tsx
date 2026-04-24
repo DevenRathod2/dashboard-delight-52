@@ -11,6 +11,8 @@ import Leads from "./pages/Leads.tsx";
 import Billing from "./pages/Billing.tsx";
 import Studio from "./pages/Studio.tsx";
 import Portfolio from "./pages/Portfolio.tsx";
+import EventDetail from "./pages/EventDetail.tsx";
+import CollectionPhotos from "./pages/CollectionPhotos.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -25,6 +27,8 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/events" element={<Events />} />
+          <Route path="/events/:id" element={<EventDetail />} />
+          <Route path="/events/:id/collections/:collectionId" element={<CollectionPhotos />} />
           <Route path="/clients" element={<Clients />} />
           <Route path="/leads" element={<Leads />} />
           <Route path="/billing" element={<Billing />} />

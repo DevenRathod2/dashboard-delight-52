@@ -106,7 +106,7 @@ const Index = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
         {events.map((e, i) => (
           <div key={i} style={{ animationDelay: `${i * 60}ms` }}>
-            <EventCard {...e} />
+            <EventCard {...e} id={String(i + 1)} />
           </div>
         ))}
       </div>
