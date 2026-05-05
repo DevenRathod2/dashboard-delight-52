@@ -3,12 +3,13 @@ import { PageHeader } from "@/components/PageHeader";
 import { StatCard } from "@/components/StatCard";
 import { Button } from "@/components/ui/button";
 import { Camera, Users, Image as ImageIcon, Sparkles, Upload, Wand2, Film, Palette, ArrowUpRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const tools = [
-  { icon: Wand2, name: "AI Face Recognition", desc: "Auto-tag clients across galleries", color: "from-primary to-primary-glow" },
-  { icon: Sparkles, name: "Smart Selections", desc: "Let clients pick their favourites with one tap", color: "from-warning to-orange-400" },
-  { icon: Film, name: "Motion Reels", desc: "Auto-generate cinematic reels for socials", color: "from-info to-cyan-400" },
-  { icon: Palette, name: "Color Grading", desc: "One-click presets across the entire shoot", color: "from-success to-emerald-400" },
+  { icon: Wand2, name: "AI Face Recognition", desc: "Auto-tag clients across galleries", color: "from-primary to-primary-glow", to: "/studio/face-recognition" },
+  { icon: Sparkles, name: "Smart Selections", desc: "Let clients pick their favourites with one tap", color: "from-warning to-orange-400", to: "/studio/smart-selections" },
+  { icon: Film, name: "Motion Reels", desc: "Auto-generate cinematic reels for socials", color: "from-info to-cyan-400", to: "/studio/motion-reels" },
+  { icon: Palette, name: "Color Grading", desc: "One-click presets across the entire shoot", color: "from-success to-emerald-400", to: "/studio/color-grading" },
 ];
 
 const team = [
@@ -56,7 +57,7 @@ const Studio = () => {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {tools.map((t) => (
-              <button key={t.name} className="group text-left p-5 rounded-2xl bg-secondary/40 border border-border/60 hover:border-primary/40 hover:bg-secondary/60 transition-all hover:-translate-y-0.5">
+              <Link to={t.to} key={t.name} className="group text-left p-5 rounded-2xl bg-secondary/40 border border-border/60 hover:border-primary/40 hover:bg-secondary/60 transition-all hover:-translate-y-0.5">
                 <div className={`inline-flex size-11 rounded-xl bg-gradient-to-br ${t.color} items-center justify-center text-white shadow-card mb-3`}>
                   <t.icon className="size-5" />
                 </div>
@@ -64,7 +65,7 @@ const Studio = () => {
                   {t.name} <ArrowUpRight className="size-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">{t.desc}</p>
-              </button>
+              </Link>
             ))}
           </div>
         </div>
