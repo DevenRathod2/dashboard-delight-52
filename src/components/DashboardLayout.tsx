@@ -7,7 +7,7 @@ import { NavLink } from "@/components/NavLink";
 import { useTheme } from "@/hooks/use-theme";
 
 const navItems = [
-  { icon: LayoutDashboard, label: "Dashboard", to: "/" },
+  { icon: LayoutDashboard, label: "Dashboard", to: "/dashboard" },
   { icon: Users, label: "Clients", to: "/clients" },
   { icon: MessageSquare, label: "Leads", to: "/leads" },
   { icon: Calendar, label: "Events", to: "/events" },
@@ -37,7 +37,7 @@ export const DashboardLayout = ({ children }: { children: ReactNode }) => {
             <NavLink
               key={item.label}
               to={item.to}
-              end={item.to === "/"}
+              end={item.to === "/dashboard"}
               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               activeClassName="!bg-gradient-primary !text-primary-foreground shadow-glow"
             >
