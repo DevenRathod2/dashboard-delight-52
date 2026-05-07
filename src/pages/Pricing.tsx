@@ -299,7 +299,7 @@ const Pricing = () => {
                       ))}
                     </tr>
                   ))}
-                </>
+                </Fragment>
               ))}
               <tr className="border-t border-border/60 bg-secondary/20">
                 <td className="px-6 py-5"></td>
