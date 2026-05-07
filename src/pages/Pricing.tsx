@@ -60,8 +60,8 @@ const plans = [
   },
 ];
 
-type Cell = string | boolean | number;
-interface Row { label: string; values: [Cell, Cell, Cell, Cell]; tip?: string; }
+type CellValue = string | boolean | number;
+interface Row { label: string; values: [CellValue, CellValue, CellValue, CellValue]; tip?: string; }
 interface Section { title: string; icon: typeof Zap; color: string; rows: Row[]; }
 
 const sections: Section[] = [
@@ -142,7 +142,7 @@ const sections: Section[] = [
 
 const formatINR = (n: number) => "₹" + n.toLocaleString("en-IN");
 
-const Cell = ({ v, color }: { v: Cell; color: string }) => {
+const Cell = ({ v, color }: { v: CellValue; color: string }) => {
   if (typeof v === "boolean") {
     return v ? (
       <div className={`inline-flex size-7 rounded-full bg-${color}/15 text-${color} items-center justify-center`}>
