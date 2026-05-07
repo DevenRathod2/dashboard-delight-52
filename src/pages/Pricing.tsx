@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import { Link } from "react-router-dom";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader } from "@/components/PageHeader";
@@ -273,8 +273,8 @@ const Pricing = () => {
             </thead>
             <tbody>
               {sections.map((sec) => (
-                <>
-                  <tr key={sec.title} className="bg-secondary/30">
+                <Fragment key={sec.title}>
+                  <tr className="bg-secondary/30">
                     <td colSpan={5} className="px-6 py-3">
                       <div className="flex items-center gap-2">
                         <div className={`size-7 rounded-lg bg-${sec.color}/15 text-${sec.color} grid place-items-center`}>
