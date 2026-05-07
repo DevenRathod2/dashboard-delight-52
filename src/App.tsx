@@ -10,6 +10,7 @@ import Events from "./pages/Index.tsx";
 import Clients from "./pages/Clients.tsx";
 import Leads from "./pages/Leads.tsx";
 import Billing from "./pages/Billing.tsx";
+import Pricing from "./pages/Pricing.tsx";
 import Studio from "./pages/Studio.tsx";
 import Portfolio from "./pages/Portfolio.tsx";
 import EventDetail from "./pages/EventDetail.tsx";
@@ -39,6 +40,7 @@ const App = () => (
           <Route path="/clients" element={<Clients />} />
           <Route path="/leads" element={<Leads />} />
           <Route path="/billing" element={<Billing />} />
+          <Route path="/pricing" element={<Pricing />} />
           <Route path="/studio" element={<Studio />} />
           <Route path="/studio/face-recognition" element={<FaceRecognition />} />
           <Route path="/studio/smart-selections" element={<SmartSelections />} />
