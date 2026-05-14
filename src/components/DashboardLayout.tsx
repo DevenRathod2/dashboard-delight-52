@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { LayoutDashboard, Users, MessageSquare, Calendar, CreditCard, Camera, FolderOpen, Settings, LogOut, HelpCircle, Search, Bell, Sun, Moon } from "lucide-react";
+import { LayoutDashboard, Users, MessageSquare, Calendar, CreditCard, Camera, FolderOpen, Settings, LogOut, HelpCircle, Search, Bell, Sun, Moon, Receipt } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,7 @@ const navItems = [
   { icon: Users, label: "Clients", to: "/clients" },
   { icon: MessageSquare, label: "Leads", to: "/leads" },
   { icon: Calendar, label: "Events", to: "/events" },
+  { icon: Receipt, label: "Invoices", to: "/invoices" },
   { icon: CreditCard, label: "Billing", to: "/billing" },
   { icon: Camera, label: "Studio", to: "/studio" },
   { icon: FolderOpen, label: "Portfolio", to: "/portfolio" },
