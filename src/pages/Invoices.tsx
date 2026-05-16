@@ -287,6 +287,13 @@ const Invoices = () => {
   const [viewing, setViewing] = useState<Invoice | null>(null);
   const [draft, setDraft] = useState<Invoice | null>(null);
 
+  // Catalog state
+  const [catalog, setCatalog] = useState<CatalogItem[]>([]);
+  const [catalogOpen, setCatalogOpen] = useState(false);
+  const [catalogDraft, setCatalogDraft] = useState<CatalogItem | null>(null);
+  const [catalogSearch, setCatalogSearch] = useState("");
+  const [pickerForLineId, setPickerForLineId] = useState<string | null>(null);
+
   // Load
   useEffect(() => {
     try {
