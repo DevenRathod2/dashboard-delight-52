@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { getInvoiceCurrency, CURRENCIES } from "@/lib/locale";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
