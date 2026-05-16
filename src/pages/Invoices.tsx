@@ -487,13 +487,23 @@ const Invoices = () => {
         }
         description="Create, send, and track invoices for every shoot. Discounts, taxes, and balance due — handled."
         actions={
-          <Button
-            size="lg"
-            onClick={openCreate}
-            className="rounded-xl bg-gradient-primary hover:opacity-90 shadow-glow"
-          >
-            <Plus className="size-4 mr-1.5" /> New Invoice
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={openCatalog}
+              className="rounded-xl bg-card/60 border-border/60 backdrop-blur-md"
+            >
+              <BookOpen className="size-4 mr-1.5" /> Item Catalog
+            </Button>
+            <Button
+              size="lg"
+              onClick={openCreate}
+              className="rounded-xl bg-gradient-primary hover:opacity-90 shadow-glow"
+            >
+              <Plus className="size-4 mr-1.5" /> New Invoice
+            </Button>
+          </div>
         }
       />
 
