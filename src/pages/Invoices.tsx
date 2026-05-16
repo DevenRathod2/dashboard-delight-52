@@ -737,11 +737,12 @@ const Invoices = () => {
                   <Label>Currency</Label>
                   <Select value={draft.currency} onValueChange={(v) => updateDraft("currency", v)}>
                     <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="INR">INR ₹</SelectItem>
-                      <SelectItem value="USD">USD $</SelectItem>
-                      <SelectItem value="EUR">EUR €</SelectItem>
-                      <SelectItem value="GBP">GBP £</SelectItem>
+                    <SelectContent className="max-h-72">
+                      {CURRENCIES.map((c) => (
+                        <SelectItem key={c.code} value={c.code}>
+                          {c.code} {c.symbol} — {c.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
