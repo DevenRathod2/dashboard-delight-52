@@ -828,6 +828,13 @@ const Invoices = () => {
                           {formatMoney(lineTotal, draft.currency)}
                         </span>
                         <button
+                          onClick={() => setPickerForLineId(it.id)}
+                          title="Insert from catalog"
+                          className="text-muted-foreground hover:text-primary"
+                        >
+                          <BookOpen className="size-4" />
+                        </button>
+                        <button
                           onClick={() => removeItem(it.id)}
                           className="text-muted-foreground hover:text-destructive"
                         >
@@ -837,12 +844,24 @@ const Invoices = () => {
                     </div>
                   );
                 })}
-                <button
-                  onClick={addItem}
-                  className="w-full px-4 py-3 border-t border-border/40 text-sm font-medium text-primary hover:bg-primary/5 flex items-center justify-center gap-2"
-                >
-                  <Plus className="size-4" /> Add line item
-                </button>
+                <div className="grid grid-cols-2 border-t border-border/40">
+                  <button
+                    onClick={addItem}
+                    className="px-4 py-3 text-sm font-medium text-primary hover:bg-primary/5 flex items-center justify-center gap-2"
+                  >
+                    <Plus className="size-4" /> Add line item
+                  </button>
+                  <button
+                    onClick={() => {
+                      const newItem = emptyItem();
+                      setDraft((d) => (d ? { ...d, items: [...d.items, newItem] } : d));
+                      setPickerForLineId(newItem.id);
+                    }}
+                    className="px-4 py-3 text-sm font-medium hover:bg-secondary/60 flex items-center justify-center gap-2 border-l border-border/40"
+                  >
+                    <BookOpen className="size-4" /> Pick from catalog
+                  </button>
+                </div>
               </div>
 
               {/* Totals + discount */}
