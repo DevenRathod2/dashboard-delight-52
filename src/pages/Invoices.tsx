@@ -315,6 +315,79 @@ const Invoices = () => {
     if (invoices.length) localStorage.setItem(STORAGE_KEY, JSON.stringify(invoices));
   }, [invoices]);
 
+  // Catalog: load
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(CATALOG_KEY);
+      if (raw) {
+        setCatalog(JSON.parse(raw));
+      } else {
+        const seeded = seedCatalog();
+        setCatalog(seeded);
+        localStorage.setItem(CATALOG_KEY, JSON.stringify(seeded));
+      }
+    } catch {
+      setCatalog(seedCatalog());
+    }
+  }, []);
+
+  // Catalog: persist
+  useEffect(() => {
+    localStorage.setItem(CATALOG_KEY, JSON.stringify(catalog));
+  }, [catalog]);
+
+  // Catalog handlers
+  const openCatalog = () => {
+    setCatalogDraft(null);
+    setCatalogOpen(true);
+  };
+  const startNewCatalog = () => setCatalogDraft(emptyCatalogItem());
+  const startEditCatalog = (item: CatalogItem) => setCatalogDraft({ ...item });
+  const saveCatalog = () => {
+    if (!catalogDraft) return;
+    if (!catalogDraft.name.trim()) {
+      toast.error("Item name is required");
+      return;
+    }
+    setCatalog((prev) => {
+      const exists = prev.find((p) => p.id === catalogDraft.id);
+      return exists ? prev.map((p) => (p.id === catalogDraft.id ? catalogDraft : p)) : [catalogDraft, ...prev];
+    });
+    toast.success("Catalog item saved");
+    setCatalogDraft(null);
+  };
+  const deleteCatalog = (id: string) => {
+    setCatalog((prev) => prev.filter((p) => p.id !== id));
+    toast.success("Catalog item deleted");
+  };
+  const applyCatalogToLine = (lineId: string, item: CatalogItem) => {
+    setDraft((d) =>
+      d
+        ? {
+            ...d,
+            items: d.items.map((it) =>
+              it.id === lineId
+                ? { ...it, description: item.name + (item.description ? ` — ${item.description}` : ""), unitPrice: item.unitPrice, taxRate: item.taxRate }
+                : it,
+            ),
+          }
+        : d,
+    );
+    setPickerForLineId(null);
+    toast.success(`Added "${item.name}"`);
+  };
+
+  const filteredCatalog = useMemo(() => {
+    const q = catalogSearch.trim().toLowerCase();
+    if (!q) return catalog;
+    return catalog.filter(
+      (c) =>
+        c.name.toLowerCase().includes(q) ||
+        c.description.toLowerCase().includes(q) ||
+        c.category.toLowerCase().includes(q),
+    );
+  }, [catalog, catalogSearch]);
+
   const stats = useMemo(() => {
     const totals = invoices.map((i) => ({ ...i, ...computeTotals(i) }));
     const revenue = totals.filter((i) => i.status === "PAID").reduce((s, i) => s + i.grandTotal, 0);
