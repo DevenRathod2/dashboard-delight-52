@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -6,7 +6,22 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTheme } from "@/hooks/use-theme";
+import { useToast } from "@/hooks/use-toast";
+import {
+  COUNTRIES,
+  CURRENCIES,
+  findCountry,
+  findCurrency,
+  formatMoney,
+  getCountry,
+  getCurrency,
+  getInvoiceCurrency,
+  setCountry as saveCountry,
+  setCurrency as saveCurrency,
+  setInvoiceCurrency as saveInvoiceCurrency,
+} from "@/lib/locale";
 import {
   User,
   Building2,
