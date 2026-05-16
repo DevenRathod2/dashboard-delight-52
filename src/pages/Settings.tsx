@@ -56,6 +56,7 @@ import {
 type SectionId =
   | "profile"
   | "studio"
+  | "localization"
   | "appearance"
   | "notifications"
   | "security"
@@ -66,6 +67,7 @@ type SectionId =
 const sections: { id: SectionId; label: string; icon: typeof User; color: string }[] = [
   { id: "profile", label: "Profile", icon: User, color: "primary" },
   { id: "studio", label: "Studio", icon: Building2, color: "info" },
+  { id: "localization", label: "Localization", icon: Globe, color: "success" },
   { id: "appearance", label: "Appearance", icon: Palette, color: "primary-glow" },
   { id: "notifications", label: "Notifications", icon: Bell, color: "warning" },
   { id: "security", label: "Security", icon: Lock, color: "success" },
