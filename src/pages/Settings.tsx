@@ -708,6 +708,7 @@ const Settings = () => {
         <div>
           {section === "profile" && <ProfileSection />}
           {section === "studio" && <StudioSection />}
+          {section === "localization" && <LocalizationSection />}
           {section === "appearance" && <AppearanceSection />}
           {section === "notifications" && <NotificationsSection />}
           {section === "security" && <SecuritySection />}
