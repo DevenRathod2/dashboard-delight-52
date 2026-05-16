@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { getInvoiceCurrency, CURRENCIES } from "@/lib/locale";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -235,7 +236,7 @@ const blankInvoice = (count: number): Invoice => ({
   billingAddress: "",
   issueDate: new Date().toISOString().slice(0, 10),
   dueDate: new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10),
-  currency: "INR",
+  currency: getInvoiceCurrency(),
   taxLabel: "GST",
   language: "en",
   notes: "",
@@ -736,11 +737,12 @@ const Invoices = () => {
                   <Label>Currency</Label>
                   <Select value={draft.currency} onValueChange={(v) => updateDraft("currency", v)}>
                     <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="INR">INR ₹</SelectItem>
-                      <SelectItem value="USD">USD $</SelectItem>
-                      <SelectItem value="EUR">EUR €</SelectItem>
-                      <SelectItem value="GBP">GBP £</SelectItem>
+                    <SelectContent className="max-h-72">
+                      {CURRENCIES.map((c) => (
+                        <SelectItem key={c.code} value={c.code}>
+                          {c.code} {c.symbol} — {c.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
