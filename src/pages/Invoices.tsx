@@ -1099,6 +1099,204 @@ const Invoices = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* ---------------- Catalog Manager Dialog ---------------- */}
+      <Dialog open={catalogOpen} onOpenChange={(o) => { if (!o) { setCatalogOpen(false); setCatalogDraft(null); } }}>
+        <DialogContent className="max-w-4xl max-h-[92vh] overflow-y-auto bg-card/95 backdrop-blur-xl border-border/60">
+          <DialogHeader>
+            <DialogTitle className="font-display text-2xl flex items-center gap-2">
+              <Package className="size-6 text-primary" /> Item Catalog
+            </DialogTitle>
+            <p className="text-sm text-muted-foreground">
+              Reusable services, packages and products. Use these to fill invoice line items in one click.
+            </p>
+          </DialogHeader>
+
+          {/* Toolbar */}
+          <div className="flex flex-col sm:flex-row gap-2">
+            <div className="relative flex-1">
+              <Search className="size-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+              <Input
+                placeholder="Search catalog..."
+                value={catalogSearch}
+                onChange={(e) => setCatalogSearch(e.target.value)}
+                className="pl-9 rounded-xl bg-secondary/40 border-border/60"
+              />
+            </div>
+            <Button onClick={startNewCatalog} className="rounded-xl bg-gradient-primary hover:opacity-90">
+              <Plus className="size-4 mr-1.5" /> New Item
+            </Button>
+          </div>
+
+          {/* Editor form */}
+          {catalogDraft && (
+            <div className="rounded-2xl border border-border/60 bg-secondary/30 p-4 space-y-3">
+              <p className="text-xs uppercase tracking-widest text-muted-foreground">
+                {catalog.find((c) => c.id === catalogDraft.id) ? "Edit item" : "New item"}
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <Label>Name *</Label>
+                  <Input
+                    className="mt-1.5"
+                    value={catalogDraft.name}
+                    onChange={(e) => setCatalogDraft({ ...catalogDraft, name: e.target.value })}
+                    placeholder="e.g. Wedding Photography — Premium"
+                  />
+                </div>
+                <div>
+                  <Label>Category</Label>
+                  <Input
+                    className="mt-1.5"
+                    value={catalogDraft.category}
+                    onChange={(e) => setCatalogDraft({ ...catalogDraft, category: e.target.value })}
+                    placeholder="Wedding, Corporate, Print..."
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <Label>Description</Label>
+                  <Textarea
+                    className="mt-1.5 min-h-[60px]"
+                    value={catalogDraft.description}
+                    onChange={(e) => setCatalogDraft({ ...catalogDraft, description: e.target.value })}
+                    placeholder="What's included in this item..."
+                  />
+                </div>
+                <div>
+                  <Label>Unit Price (₹)</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    className="mt-1.5"
+                    value={catalogDraft.unitPrice}
+                    onChange={(e) => setCatalogDraft({ ...catalogDraft, unitPrice: Number(e.target.value) || 0 })}
+                  />
+                </div>
+                <div>
+                  <Label>Tax Rate (%)</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    max={100}
+                    className="mt-1.5"
+                    value={catalogDraft.taxRate}
+                    onChange={(e) => setCatalogDraft({ ...catalogDraft, taxRate: Number(e.target.value) || 0 })}
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 pt-1">
+                <Button variant="ghost" onClick={() => setCatalogDraft(null)}>Cancel</Button>
+                <Button onClick={saveCatalog} className="bg-gradient-primary hover:opacity-90">
+                  <CheckCircle2 className="size-4 mr-1.5" /> Save Item
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Catalog list */}
+          <div className="rounded-2xl border border-border/60 overflow-hidden">
+            <div className="grid grid-cols-12 gap-2 px-4 py-3 bg-secondary/40 text-xs uppercase tracking-widest text-muted-foreground">
+              <div className="col-span-5">Name</div>
+              <div className="col-span-2">Category</div>
+              <div className="col-span-2 text-right">Price</div>
+              <div className="col-span-1 text-right">Tax</div>
+              <div className="col-span-2 text-right">Actions</div>
+            </div>
+            {filteredCatalog.length === 0 && (
+              <div className="p-8 text-center text-sm text-muted-foreground">
+                No catalog items found. Click "New Item" to add one.
+              </div>
+            )}
+            {filteredCatalog.map((c) => (
+              <div
+                key={c.id}
+                className="grid grid-cols-12 gap-2 px-4 py-3 border-t border-border/40 items-center hover:bg-secondary/30"
+              >
+                <div className="col-span-5">
+                  <p className="font-medium text-sm">{c.name}</p>
+                  {c.description && (
+                    <p className="text-xs text-muted-foreground truncate">{c.description}</p>
+                  )}
+                </div>
+                <div className="col-span-2">
+                  <Badge variant="outline" className="text-[10px] border-border/60">{c.category}</Badge>
+                </div>
+                <div className="col-span-2 text-right font-medium text-sm">
+                  {formatMoney(c.unitPrice)}
+                </div>
+                <div className="col-span-1 text-right text-sm text-muted-foreground">{c.taxRate}%</div>
+                <div className="col-span-2 flex items-center justify-end gap-1">
+                  <Button size="icon" variant="ghost" onClick={() => startEditCatalog(c)} className="rounded-lg">
+                    <Pencil className="size-4" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => deleteCatalog(c.id)}
+                    className="rounded-lg text-destructive"
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => { setCatalogOpen(false); setCatalogDraft(null); }}>
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ---------------- Catalog Picker (in editor) ---------------- */}
+      <Dialog open={!!pickerForLineId} onOpenChange={(o) => !o && setPickerForLineId(null)}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-card/95 backdrop-blur-xl border-border/60">
+          <DialogHeader>
+            <DialogTitle className="font-display text-xl flex items-center gap-2">
+              <BookOpen className="size-5 text-primary" /> Pick a catalog item
+            </DialogTitle>
+          </DialogHeader>
+          <div className="relative">
+            <Search className="size-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+            <Input
+              placeholder="Search catalog..."
+              value={catalogSearch}
+              onChange={(e) => setCatalogSearch(e.target.value)}
+              className="pl-9 rounded-xl bg-secondary/40 border-border/60"
+            />
+          </div>
+          <div className="space-y-2 max-h-[55vh] overflow-y-auto pr-1">
+            {filteredCatalog.length === 0 && (
+              <div className="p-8 text-center text-sm text-muted-foreground">
+                No items match. Open Item Catalog to add one.
+              </div>
+            )}
+            {filteredCatalog.map((c) => (
+              <button
+                key={c.id}
+                onClick={() => pickerForLineId && applyCatalogToLine(pickerForLineId, c)}
+                className="w-full text-left rounded-xl border border-border/60 bg-secondary/30 hover:bg-primary/5 hover:border-primary/40 transition-all p-4 flex items-start justify-between gap-3"
+              >
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold text-sm truncate">{c.name}</p>
+                    <Badge variant="outline" className="text-[10px] border-border/60">{c.category}</Badge>
+                  </div>
+                  {c.description && (
+                    <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{c.description}</p>
+                  )}
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="font-display font-bold">{formatMoney(c.unitPrice)}</p>
+                  <p className="text-[10px] text-muted-foreground">Tax {c.taxRate}%</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 };
