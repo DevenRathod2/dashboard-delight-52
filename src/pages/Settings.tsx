@@ -217,6 +217,137 @@ const StudioSection = () => (
   </div>
 );
 
+const LocalizationSection = () => {
+  const { toast } = useToast();
+  const [country, setCountryState] = useState(getCountry());
+  const [currency, setCurrencyState] = useState(getCurrency());
+  const [invoiceCurrency, setInvoiceCurrencyState] = useState(getInvoiceCurrency());
+  const [autoSync, setAutoSync] = useState(true);
+
+  useEffect(() => {
+    if (!autoSync) return;
+    const def = findCountry(country).currency;
+    setCurrencyState(def);
+    setInvoiceCurrencyState(def);
+  }, [country, autoSync]);
+
+  const save = () => {
+    saveCountry(country);
+    saveCurrency(currency);
+    saveInvoiceCurrency(invoiceCurrency);
+    toast({
+      title: "Localization saved",
+      description: `${findCountry(country).name} · Display ${currency} · Invoices ${invoiceCurrency}`,
+    });
+  };
+
+  const sampleAmount = 12500;
+  const ct = findCountry(country);
+
+  return (
+    <div className="space-y-5">
+      <Card
+        title="Country & Region"
+        description="Set when your account was created — used to suggest pricing currency, tax labels and date formats."
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Field label="Country">
+            <Select value={country} onValueChange={setCountryState}>
+              <SelectTrigger className="rounded-xl bg-secondary/40 border-border/60 h-11">
+                <SelectValue placeholder="Select country" />
+              </SelectTrigger>
+              <SelectContent className="max-h-72">
+                {COUNTRIES.map((c) => (
+                  <SelectItem key={c.code} value={c.code}>
+                    <span className="mr-2">{c.flag}</span>
+                    {c.name} <span className="text-muted-foreground ml-1">· {c.currency}</span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field label="Default Tax Label">
+            <Input value={ct.taxLabel} readOnly className="rounded-xl bg-secondary/40 border-border/60 h-11" />
+          </Field>
+        </div>
+
+        <div className="mt-5 flex items-center justify-between p-4 rounded-2xl bg-secondary/40 border border-border/60">
+          <div>
+            <p className="font-semibold text-sm">Auto-sync currency with country</p>
+            <p className="text-xs text-muted-foreground">When on, changing country updates display & invoice currencies.</p>
+          </div>
+          <Switch checked={autoSync} onCheckedChange={setAutoSync} />
+        </div>
+      </Card>
+
+      <Card title="Currency" description="Choose how prices and invoice totals are displayed.">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Field label="Display Currency (Pricing, Billing)">
+            <Select value={currency} onValueChange={setCurrencyState}>
+              <SelectTrigger className="rounded-xl bg-secondary/40 border-border/60 h-11">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="max-h-72">
+                {CURRENCIES.map((c) => (
+                  <SelectItem key={c.code} value={c.code}>
+                    <span className="font-mono mr-2">{c.symbol}</span>
+                    {c.code} — {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field label="Default Invoice Currency">
+            <Select value={invoiceCurrency} onValueChange={setInvoiceCurrencyState}>
+              <SelectTrigger className="rounded-xl bg-secondary/40 border-border/60 h-11">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="max-h-72">
+                {CURRENCIES.map((c) => (
+                  <SelectItem key={c.code} value={c.code}>
+                    <span className="font-mono mr-2">{c.symbol}</span>
+                    {c.code} — {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+        </div>
+
+        <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="p-4 rounded-2xl bg-gradient-card border border-border/60">
+            <p className="text-[10px] uppercase tracking-widest text-muted-foreground">Display preview</p>
+            <p className="font-display font-bold text-2xl mt-1">{formatMoney(sampleAmount, currency)}</p>
+            <p className="text-xs text-muted-foreground mt-1">{findCurrency(currency).name}</p>
+          </div>
+          <div className="p-4 rounded-2xl bg-gradient-card border border-border/60">
+            <p className="text-[10px] uppercase tracking-widest text-muted-foreground">Invoice preview</p>
+            <p className="font-display font-bold text-2xl mt-1">{formatMoney(sampleAmount, invoiceCurrency)}</p>
+            <p className="text-xs text-muted-foreground mt-1">New invoices default to this currency.</p>
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-2 mt-6">
+          <Button
+            variant="outline"
+            className="rounded-xl"
+            onClick={() => {
+              setCountryState(getCountry());
+              setCurrencyState(getCurrency());
+              setInvoiceCurrencyState(getInvoiceCurrency());
+            }}
+          >
+            Reset
+          </Button>
+          <Button className="rounded-xl bg-gradient-primary text-primary-foreground shadow-glow" onClick={save}>
+            <Check className="size-4" /> Save localization
+          </Button>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
 const AppearanceSection = () => {
   const { theme, toggleTheme } = useTheme();
   const accents = [
