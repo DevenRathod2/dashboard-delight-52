@@ -236,7 +236,7 @@ const blankInvoice = (count: number): Invoice => ({
   billingAddress: "",
   issueDate: new Date().toISOString().slice(0, 10),
   dueDate: new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10),
-  currency: "INR",
+  currency: getInvoiceCurrency(),
   taxLabel: "GST",
   language: "en",
   notes: "",
