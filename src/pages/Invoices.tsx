@@ -35,6 +35,9 @@ import {
   TrendingUp,
   AlertCircle,
   Receipt,
+  Package,
+  Pencil,
+  BookOpen,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -48,6 +51,36 @@ interface LineItem {
   unitPrice: number;
   taxRate: number;
 }
+
+interface CatalogItem {
+  id: string;
+  name: string;
+  description: string;
+  unitPrice: number;
+  taxRate: number;
+  category: string;
+  createdAt: string;
+}
+
+const CATALOG_KEY = "lensly.catalog.v1";
+
+const seedCatalog = (): CatalogItem[] => [
+  { id: "c1", name: "Wedding Photography — 2 Day Package", description: "Full coverage, 2 photographers, edited gallery", unitPrice: 120000, taxRate: 18, category: "Wedding", createdAt: new Date().toISOString() },
+  { id: "c2", name: "Cinematic Highlight Reel", description: "3-5 min cinematic film with licensed music", unitPrice: 35000, taxRate: 18, category: "Video", createdAt: new Date().toISOString() },
+  { id: "c3", name: "Pre-Wedding Shoot", description: "Half-day outdoor session, 100+ edited photos", unitPrice: 25000, taxRate: 18, category: "Wedding", createdAt: new Date().toISOString() },
+  { id: "c4", name: "Photo Album (Premium)", description: "30 page premium hard-bound album", unitPrice: 8000, taxRate: 12, category: "Print", createdAt: new Date().toISOString() },
+  { id: "c5", name: "Corporate Event Coverage", description: "Up to 6 hours, edited gallery within 5 days", unitPrice: 45000, taxRate: 18, category: "Corporate", createdAt: new Date().toISOString() },
+];
+
+const emptyCatalogItem = (): CatalogItem => ({
+  id: `cat_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+  name: "",
+  description: "",
+  unitPrice: 0,
+  taxRate: 18,
+  category: "General",
+  createdAt: new Date().toISOString(),
+});
 
 interface Invoice {
   id: string;
