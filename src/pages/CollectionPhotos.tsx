@@ -28,6 +28,13 @@ const CollectionPhotos = () => {
   const [view, setView] = useState<"grid" | "list">("grid");
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [selectMode, setSelectMode] = useState(false);
+  const [uploadOpen, setUploadOpen] = useState(false);
+  const [uploadMode, setUploadMode] = useState<UploadMode>("image");
+
+  const openUpload = (mode: UploadMode) => {
+    setUploadMode(mode);
+    setUploadOpen(true);
+  };
 
   const toggle = (pid: number) => {
     if (!selectMode) return;
