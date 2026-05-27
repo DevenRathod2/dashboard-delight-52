@@ -241,6 +241,12 @@ const CollectionPhotos = () => {
           })}
         </div>
       )}
+
+      <UploadDialog
+        open={uploadOpen}
+        onOpenChange={setUploadOpen}
+        mode={uploadMode}
+      />
     </DashboardLayout>
   );
 };
