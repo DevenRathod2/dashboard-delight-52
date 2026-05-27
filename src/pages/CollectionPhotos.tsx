@@ -11,6 +11,7 @@ import event1 from "@/assets/event-1.jpg";
 import event2 from "@/assets/event-2.jpg";
 import event3 from "@/assets/event-3.jpg";
 import event4 from "@/assets/event-4.jpg";
+import { UploadDialog, type UploadMode } from "@/components/UploadDialog";
 
 const covers = [event1, event2, event3, event4];
 
@@ -27,6 +28,13 @@ const CollectionPhotos = () => {
   const [view, setView] = useState<"grid" | "list">("grid");
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [selectMode, setSelectMode] = useState(false);
+  const [uploadOpen, setUploadOpen] = useState(false);
+  const [uploadMode, setUploadMode] = useState<UploadMode>("image");
+
+  const openUpload = (mode: UploadMode) => {
+    setUploadMode(mode);
+    setUploadOpen(true);
+  };
 
   const toggle = (pid: number) => {
     if (!selectMode) return;
@@ -71,10 +79,10 @@ const CollectionPhotos = () => {
         </Button>
 
         <div className="ml-auto flex flex-wrap items-center gap-2">
-          <Button size="sm" className="rounded-xl bg-success text-success-foreground hover:bg-success/90 shadow-card">
+          <Button onClick={() => openUpload("image")} size="sm" className="rounded-xl bg-success text-success-foreground hover:bg-success/90 shadow-card">
             <Upload className="size-3.5 mr-1.5" /> Upload Images/Folder
           </Button>
-          <Button size="sm" className="rounded-xl bg-info text-info-foreground hover:bg-info/90 shadow-card">
+          <Button onClick={() => openUpload("video")} size="sm" className="rounded-xl bg-info text-info-foreground hover:bg-info/90 shadow-card">
             <Video className="size-3.5 mr-1.5" /> Upload Video
           </Button>
           <Button size="sm" className="rounded-xl bg-gradient-primary hover:opacity-90 shadow-glow">
@@ -233,6 +241,12 @@ const CollectionPhotos = () => {
           })}
         </div>
       )}
+
+      <UploadDialog
+        open={uploadOpen}
+        onOpenChange={setUploadOpen}
+        mode={uploadMode}
+      />
     </DashboardLayout>
   );
 };
