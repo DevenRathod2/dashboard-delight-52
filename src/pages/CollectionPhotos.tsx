@@ -79,10 +79,10 @@ const CollectionPhotos = () => {
         </Button>
 
         <div className="ml-auto flex flex-wrap items-center gap-2">
-          <Button size="sm" className="rounded-xl bg-success text-success-foreground hover:bg-success/90 shadow-card">
+          <Button onClick={() => openUpload("image")} size="sm" className="rounded-xl bg-success text-success-foreground hover:bg-success/90 shadow-card">
             <Upload className="size-3.5 mr-1.5" /> Upload Images/Folder
           </Button>
-          <Button size="sm" className="rounded-xl bg-info text-info-foreground hover:bg-info/90 shadow-card">
+          <Button onClick={() => openUpload("video")} size="sm" className="rounded-xl bg-info text-info-foreground hover:bg-info/90 shadow-card">
             <Video className="size-3.5 mr-1.5" /> Upload Video
           </Button>
           <Button size="sm" className="rounded-xl bg-gradient-primary hover:opacity-90 shadow-glow">
