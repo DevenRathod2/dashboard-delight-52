@@ -146,7 +146,7 @@ export const UploadDialog = ({ open, onOpenChange, mode, onComplete }: Props) =>
     setQuality(q);
     setStage("processing");
     // mark all queued -> processing
-    setItems((p) => p.map((i) => ({ ...i, status: "processing", processed: 0 })));
+    setItems((p) => p.map((i) => ({ ...i, status: "processing" as const, processed: 0 })));
     // simulate processing for each
     items.forEach((it) => {
       const speed = q === "compressed" ? 14 : 6; // compressed is faster
