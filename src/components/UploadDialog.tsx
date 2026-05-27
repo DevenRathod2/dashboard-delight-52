@@ -158,7 +158,7 @@ export const UploadDialog = ({ open, onOpenChange, mode, onComplete }: Props) =>
             if (np >= 100) {
               window.clearInterval(timersRef.current[it.id + ":p"]);
               delete timersRef.current[it.id + ":p"];
-              return { ...i, processed: 100, status: "ready" };
+              return { ...i, processed: 100, status: "ready" as const };
             }
             return { ...i, processed: np };
           });
