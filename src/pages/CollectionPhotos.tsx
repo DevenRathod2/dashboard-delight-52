@@ -4,7 +4,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  ArrowLeft, Search, Filter, Upload, Video, Download, MoreVertical,
+  ArrowLeft, Search, Filter, Upload, Download, MoreVertical,
   LayoutGrid, List, CheckSquare, Edit3, X,
 } from "lucide-react";
 import event1 from "@/assets/event-1.jpg";
@@ -79,11 +79,8 @@ const CollectionPhotos = () => {
         </Button>
 
         <div className="ml-auto flex flex-wrap items-center gap-2">
-          <Button onClick={() => openUpload("image")} size="sm" className="rounded-xl bg-success text-success-foreground hover:bg-success/90 shadow-card">
-            <Upload className="size-3.5 mr-1.5" /> Upload Images/Folder
-          </Button>
-          <Button onClick={() => openUpload("video")} size="sm" className="rounded-xl bg-info text-info-foreground hover:bg-info/90 shadow-card">
-            <Video className="size-3.5 mr-1.5" /> Upload Video
+          <Button onClick={() => setUploadOpen(true)} size="sm" className="rounded-xl bg-gradient-primary text-primary-foreground hover:opacity-90 shadow-glow">
+            <Upload className="size-3.5 mr-1.5" /> Upload Media
           </Button>
           <Button size="sm" className="rounded-xl bg-gradient-primary hover:opacity-90 shadow-glow">
             <Download className="size-3.5 mr-1.5" /> Get Selected ({selected.size})
