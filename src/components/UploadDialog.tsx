@@ -56,7 +56,7 @@ const SOURCES: {
   { key: "images",  group: "Upload", label: "Images",       icon: ImageIcon, tint: "from-sky-400 to-primary" },
   { key: "videos",  group: "Upload", label: "Videos",       icon: Video,     tint: "from-fuchsia-500 to-info" },
   { key: "folder",  group: "Upload", label: "Folder",       icon: FolderUp,  tint: "from-amber-400 to-orange-500" },
-  { key: "youtube", group: "Embed",  label: "YouTube",      icon: Youtube,   tint: "from-rose-500 to-red-600" },
+  { key: "youtube", group: "Embed",  label: "YouTube",      icon: YoutubeIcon,   tint: "from-rose-500 to-red-600" },
   { key: "cloud",   group: "Import", label: "Cloud",        icon: Cloud,     tint: "from-cyan-400 to-emerald-400" },
   { key: "gdrive",  group: "Import", label: "Google Drive", icon: HardDrive, tint: "from-emerald-400 to-yellow-400" },
 ];
@@ -446,7 +446,7 @@ export const UploadDialog = ({ open, onOpenChange, mode, collectionName, onCompl
                 {source === "youtube" && (
                   <div className="rounded-3xl border border-border/60 bg-secondary/40 p-8 text-center">
                     <div className="mx-auto size-16 rounded-2xl grid place-items-center mb-4 bg-gradient-to-br from-rose-500 to-red-600 text-white shadow-card">
-                      <Youtube className="size-7" />
+                      <YoutubeIcon className="size-7" />
                     </div>
                     <p className="font-display font-bold text-lg">Embed a YouTube video</p>
                     <p className="text-sm text-muted-foreground mt-1">Paste a public YouTube link to attach it to this collection.</p>
