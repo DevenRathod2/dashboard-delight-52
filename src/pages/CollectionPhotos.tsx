@@ -3,7 +3,10 @@ import { Link, useParams } from "react-router-dom";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { UploadDialog } from "@/components/UploadDialog";
+import {
+  ArrowLeft, Search, Filter, Upload, Download, MoreVertical,
+  LayoutGrid, List, CheckSquare, Edit3, X,
+} from "lucide-react";
 import event1 from "@/assets/event-1.jpg";
 import event2 from "@/assets/event-2.jpg";
 import event3 from "@/assets/event-3.jpg";
