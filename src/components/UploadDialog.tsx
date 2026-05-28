@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import {
   UploadCloud, FolderUp, Image as ImageIcon, Video, FileUp,
   CheckCircle2, X, Loader2, Play, Pause, Sparkles, Gem,
-  Wand2, ArrowLeft, Zap, Youtube as YoutubeIcon, Cloud, HardDrive, Link2,
+  Wand2, ArrowLeft, Zap, Play as YoutubeIcon, Cloud, HardDrive, Link2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
