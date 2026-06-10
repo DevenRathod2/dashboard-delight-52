@@ -3,16 +3,10 @@ import { Link, useParams } from "react-router-dom";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
-import {
-  ArrowLeft, Image as ImageIcon, CheckCircle2, HardDrive, CalendarDays,
-  Palette, Share2, KeyRound, Eye, MoreHorizontal, Edit3, Plus, Copy,
-  Search, Filter, Upload, Download, LayoutGrid, List, CheckSquare, X,
-  Folder, Heart, Trash2, ChevronDown, Monitor, Smartphone, FileText,
-  Star, Sparkles, Video as VideoIcon, Pencil,
+  ArrowLeft, Image as ImageIcon, Palette, Share2, Settings as SettingsIcon,
+  Plus, Search, Upload, LayoutGrid, List, CheckSquare, X, Download,
+  MoreHorizontal, Folder, Trash2, Pencil, Video as VideoIcon,
 } from "lucide-react";
 import event1 from "@/assets/event-1.jpg";
 import event2 from "@/assets/event-2.jpg";
@@ -25,44 +19,26 @@ const covers = [event1, event2, event3, event4];
 type Collection = {
   id: string;
   name: string;
-  description: string;
   cover: string;
   photos: number;
   selected: number;
-  likes: number;
-  active: boolean;
 };
 
 const collectionsSeed: Collection[] = [
-  { id: "day-1", name: "Day 1", description: "this is day 1 photos", cover: event1, photos: 42, selected: 0, likes: 0, active: true },
-  { id: "day-2", name: "Day 2", description: "Beautiful moments from day 2", cover: event2, photos: 18, selected: 0, likes: 0, active: true },
-  { id: "day-3", name: "Reception", description: "Evening reception highlights", cover: event3, photos: 64, selected: 4, likes: 12, active: true },
-  { id: "day-4", name: "Portraits", description: "Couple portraits & details", cover: event4, photos: 28, selected: 2, likes: 6, active: false },
+  { id: "day-1", name: "Day 1", cover: event1, photos: 42, selected: 0 },
+  { id: "day-2", name: "Day 2", cover: event2, photos: 18, selected: 0 },
+  { id: "day-3", name: "Reception", cover: event3, photos: 64, selected: 4 },
+  { id: "day-4", name: "Portraits", cover: event4, photos: 28, selected: 2 },
 ];
 
-const buildPhotos = (cover: string, count: number) =>
+const buildPhotos = (count: number) =>
   Array.from({ length: count }).map((_, i) => ({
     id: i + 1,
     name: `DSC0${6848 + i}.JPG`,
     size: `${(7 + (i % 16) + Math.random()).toFixed(1)} MB`,
     date: "29/03/2026",
     src: covers[i % covers.length],
-    coverHint: cover,
   }));
-
-const Stat = ({
-  icon: Icon, value, label, tint,
-}: { icon: any; value: string; label: string; tint: string }) => (
-  <div className="flex items-center gap-2.5">
-    <div className={`size-9 rounded-xl bg-gradient-to-br ${tint} grid place-items-center text-white shadow-card`}>
-      <Icon className="size-4" />
-    </div>
-    <div className="leading-tight">
-      <p className="text-sm font-bold">{value}</p>
-      <p className="text-[11px] text-muted-foreground">{label}</p>
-    </div>
-  </div>
-);
 
 const EventDetail = () => {
   const { id } = useParams();
@@ -78,9 +54,8 @@ const EventDetail = () => {
   const [collectionsQuery, setCollectionsQuery] = useState("");
 
   const active = collections.find((c) => c.id === activeId) ?? collections[0];
-  const photos = buildPhotos(active.cover, Math.max(active.photos, 8));
+  const photos = buildPhotos(Math.max(active.photos, 8));
   const filtered = photos.filter((p) => p.name.toLowerCase().includes(search.toLowerCase()));
-
   const filteredCollections = collections.filter((c) =>
     c.name.toLowerCase().includes(collectionsQuery.toLowerCase()),
   );
@@ -101,82 +76,32 @@ const EventDetail = () => {
 
   return (
     <DashboardLayout>
-      {/* Header */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-aurora border border-border/60 p-5 lg:p-6 mb-6">
-        <div className="absolute -top-20 -right-20 size-72 rounded-full bg-primary/20 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-20 -left-20 size-72 rounded-full bg-info/15 blur-3xl pointer-events-none" />
-
-        <div className="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Link
-              to="/events"
-              className="size-10 rounded-xl bg-card/70 border border-border/60 backdrop-blur-md grid place-items-center hover:bg-secondary transition-colors"
-              aria-label="Back to events"
-            >
-              <ArrowLeft className="size-4" />
-            </Link>
-            <div>
-              <p className="text-[11px] font-medium text-primary uppercase tracking-widest">Event</p>
-              <div className="flex items-center gap-3">
-                <h1 className="font-display font-extrabold text-2xl lg:text-3xl tracking-tight">{eventTitle}</h1>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-info/15 text-info border border-info/30">
-                  <span className="size-1.5 rounded-full bg-current" /> Planned
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2">
-            <Button size="sm" className="rounded-xl bg-gradient-primary hover:opacity-90 shadow-glow">
-              <Palette className="size-3.5 mr-1.5" /> Design Gallery
-            </Button>
-            <Button size="sm" variant="secondary" className="rounded-xl border border-border/60">
-              <Share2 className="size-3.5 mr-1.5" /> Share URL
-            </Button>
-            <Button size="sm" variant="secondary" className="rounded-xl border border-border/60">
-              <KeyRound className="size-3.5 mr-1.5" /> Access Code: 2233
-              <Copy className="size-3 ml-1.5 text-muted-foreground" />
-            </Button>
-            <Button size="sm" variant="secondary" className="rounded-xl border border-border/60">
-              <Eye className="size-3.5 mr-1.5" /> Preview
-            </Button>
-            <Button size="sm" variant="ghost" className="rounded-xl border border-border/60 size-9 p-0">
-              <MoreHorizontal className="size-4" />
-            </Button>
-          </div>
+      {/* Slim top bar */}
+      <div className="flex flex-wrap items-center gap-3 mb-6">
+        <Link
+          to="/events"
+          className="size-10 rounded-xl bg-card/70 border border-border/60 backdrop-blur-md grid place-items-center hover:bg-secondary transition-colors"
+          aria-label="Back to events"
+        >
+          <ArrowLeft className="size-4" />
+        </Link>
+        <div className="min-w-0">
+          <p className="text-[11px] font-medium text-primary uppercase tracking-widest">Event</p>
+          <h1 className="font-display font-extrabold text-xl lg:text-2xl tracking-tight truncate">{eventTitle}</h1>
         </div>
-      </div>
 
-      {/* Stats strip */}
-      <div className="rounded-2xl bg-card/60 border border-border/60 backdrop-blur-md shadow-card p-4 mb-6">
-        <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
-          <Stat icon={ImageIcon} value={String(collections.reduce((a, c) => a + c.photos, 0))} label="Total Photos" tint="from-primary to-primary-glow" />
-          <Stat icon={CheckCircle2} value={String(collections.reduce((a, c) => a + c.selected, 0))} label="Selected" tint="from-success to-emerald-400" />
-          <Stat icon={HardDrive} value="2.99 GB" label="Storage" tint="from-warning to-orange-400" />
-          <Stat icon={CalendarDays} value="31/03/2026" label="Completed" tint="from-info to-cyan-400" />
-
-          <div className="flex items-center gap-2">
-            <p className="text-xs text-muted-foreground">Selection Status</p>
-            <Select defaultValue="under">
-              <SelectTrigger className="h-9 w-[180px] rounded-xl bg-secondary/60 border-border/60 text-xs font-semibold uppercase tracking-wide">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="under">Under Selection</SelectItem>
-                <SelectItem value="submitted">Submitted</SelectItem>
-                <SelectItem value="approved">Approved</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-xs">Publish gallery</span>
-            <Switch defaultChecked />
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs">AI Face Search</span>
-            <Switch />
-          </div>
+        <div className="ml-auto flex flex-wrap items-center gap-2">
+          <Button size="sm" className="rounded-xl bg-gradient-primary hover:opacity-90 shadow-glow">
+            <Palette className="size-3.5 mr-1.5" /> Design Gallery
+          </Button>
+          <Button size="sm" variant="secondary" className="rounded-xl border border-border/60">
+            <Share2 className="size-3.5 mr-1.5" /> Share URL
+          </Button>
+          <Link to={`/events/${id}/settings`}>
+            <Button size="sm" variant="secondary" className="rounded-xl border border-border/60">
+              <SettingsIcon className="size-3.5 mr-1.5" /> Event Settings
+            </Button>
+          </Link>
         </div>
       </div>
 
@@ -184,7 +109,6 @@ const EventDetail = () => {
       <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
         {/* Collections rail */}
         <aside className="rounded-[2.5rem] bg-card/50 border border-border/60 backdrop-blur-2xl shadow-elevated flex flex-col lg:sticky lg:top-4 self-start overflow-hidden">
-          {/* Dynamic cover section */}
           <div className="p-5">
             <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden group shadow-elevated ring-1 ring-border/60">
               <img
@@ -193,16 +117,12 @@ const EventDetail = () => {
                 className="size-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-background/10" />
-
-              {/* Quick edit */}
               <button
                 className="absolute top-4 right-4 p-2.5 bg-foreground/10 hover:bg-foreground/20 backdrop-blur-xl rounded-full border border-foreground/20 transition-all active:scale-90"
                 aria-label="Change cover image"
               >
                 <Pencil className="size-4 text-foreground" />
               </button>
-
-              {/* Floating stats */}
               <div className="absolute bottom-5 left-5 right-5 flex gap-2">
                 <div className="flex-1 bg-foreground/10 backdrop-blur-md border border-foreground/10 rounded-2xl p-3 flex flex-col">
                   <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">Photos</span>
@@ -222,7 +142,6 @@ const EventDetail = () => {
             </div>
           </div>
 
-          {/* Navigation & search */}
           <div className="px-5 space-y-3">
             <div className="relative group">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
@@ -242,7 +161,6 @@ const EventDetail = () => {
             </button>
           </div>
 
-          {/* Collections list */}
           <nav className="flex-1 mt-6 px-3 pb-2 space-y-1.5">
             <div className="px-4 mb-3 flex items-center justify-between">
               <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground">Collections</h3>
@@ -298,7 +216,6 @@ const EventDetail = () => {
             })}
           </nav>
 
-          {/* Contextual footer */}
           <div className="p-5 mt-auto">
             <div className="bg-secondary/40 rounded-2xl p-4 border border-border/60">
               <div className="flex justify-between items-center mb-2">
@@ -314,72 +231,21 @@ const EventDetail = () => {
 
         {/* Main: photos for active collection */}
         <section className="min-w-0">
-          {/* Collection header */}
-          <div className="rounded-3xl bg-card/60 border border-border/60 backdrop-blur-md shadow-card p-4 mb-4">
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="size-11 rounded-2xl overflow-hidden shrink-0">
-                <img src={active.cover} alt={active.name} className="size-full object-cover" />
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <h2 className="font-display font-bold text-lg leading-tight truncate">{active.name}</h2>
-                  <button className="size-6 rounded-md hover:bg-secondary grid place-items-center" aria-label="Rename">
-                    <Edit3 className="size-3 text-muted-foreground" />
-                  </button>
-                  <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
-                    active.active ? "bg-success/15 text-success border-success/30" : "bg-muted/40 text-muted-foreground border-border"
-                  }`}>
-                    <span className="size-1.5 rounded-full bg-current" /> {active.active ? "Active" : "Hidden"}
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground truncate">{active.description}</p>
-              </div>
+          {/* Slim toolbar */}
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <h2 className="font-display font-bold text-lg leading-tight truncate mr-2">{active.name}</h2>
+            <span className="text-xs text-muted-foreground">{filtered.length} photos</span>
 
-              <div className="ml-auto flex flex-wrap items-center gap-2">
-                <div className="relative">
-                  <Search className="size-3.5 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
-                  <Input
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search photos..."
-                    className="pl-8 h-9 w-56 rounded-xl bg-secondary/60 border-border/60 text-xs"
-                  />
-                </div>
-                <Button variant="secondary" size="sm" className="rounded-xl border border-border/60">
-                  <Filter className="size-3.5 mr-1.5" /> All
-                </Button>
-                <Button onClick={() => setUploadOpen(true)} size="sm" className="rounded-xl bg-gradient-primary text-primary-foreground hover:opacity-90 shadow-glow">
-                  <Upload className="size-3.5 mr-1.5" /> Upload
-                </Button>
-                <Button size="sm" variant="secondary" className="rounded-xl border border-border/60">
-                  <Download className="size-3.5 mr-1.5" /> Get ({selected.size})
-                </Button>
-
-                <div className="flex items-center p-1 rounded-xl bg-secondary/60 border border-border/60">
-                  <button
-                    onClick={() => setView("grid")}
-                    aria-label="Grid view"
-                    className={`size-8 rounded-lg grid place-items-center transition-colors ${
-                      view === "grid" ? "bg-gradient-primary text-primary-foreground shadow-glow" : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    <LayoutGrid className="size-4" />
-                  </button>
-                  <button
-                    onClick={() => setView("list")}
-                    aria-label="List view"
-                    className={`size-8 rounded-lg grid place-items-center transition-colors ${
-                      view === "list" ? "bg-gradient-primary text-primary-foreground shadow-glow" : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    <List className="size-4" />
-                  </button>
-                </div>
+            <div className="ml-auto flex flex-wrap items-center gap-2">
+              <div className="relative">
+                <Search className="size-3.5 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+                <Input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search photos..."
+                  className="pl-8 h-9 w-56 rounded-xl bg-secondary/60 border-border/60 text-xs"
+                />
               </div>
-            </div>
-
-            {/* Selection bar */}
-            <div className="flex flex-wrap items-center gap-2 mt-4">
               <Button
                 size="sm"
                 variant={selectMode ? "default" : "secondary"}
@@ -389,10 +255,38 @@ const EventDetail = () => {
                 <CheckSquare className="size-3.5 mr-1.5" />
                 {selectMode ? "Selecting…" : "Select"}
               </Button>
+              <Button onClick={() => setUploadOpen(true)} size="sm" className="rounded-xl bg-gradient-primary text-primary-foreground hover:opacity-90 shadow-glow">
+                <Upload className="size-3.5 mr-1.5" /> Upload
+              </Button>
+              <div className="flex items-center p-1 rounded-xl bg-secondary/60 border border-border/60">
+                <button
+                  onClick={() => setView("grid")}
+                  aria-label="Grid view"
+                  className={`size-8 rounded-lg grid place-items-center transition-colors ${
+                    view === "grid" ? "bg-gradient-primary text-primary-foreground shadow-glow" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <LayoutGrid className="size-4" />
+                </button>
+                <button
+                  onClick={() => setView("list")}
+                  aria-label="List view"
+                  className={`size-8 rounded-lg grid place-items-center transition-colors ${
+                    view === "list" ? "bg-gradient-primary text-primary-foreground shadow-glow" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <List className="size-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Selection bar (only when in select mode) */}
+          {selectMode && (
+            <div className="flex flex-wrap items-center gap-2 mb-4 p-3 rounded-2xl bg-card/60 border border-border/60">
               <Button
                 size="sm"
                 variant="secondary"
-                disabled={!selectMode}
                 onClick={() => setSelected(new Set(filtered.map((p) => p.id)))}
                 className="rounded-xl border border-border/60"
               >
@@ -412,6 +306,9 @@ const EventDetail = () => {
                   <Button size="sm" variant="secondary" className="rounded-xl border border-border/60">
                     <Folder className="size-3.5 mr-1.5" /> Move
                   </Button>
+                  <Button size="sm" variant="secondary" className="rounded-xl border border-border/60">
+                    <Download className="size-3.5 mr-1.5" /> Download
+                  </Button>
                   <Button size="sm" variant="ghost" className="rounded-xl border border-destructive/40 text-destructive hover:text-destructive">
                     <Trash2 className="size-3.5 mr-1.5" /> Delete
                   </Button>
@@ -421,7 +318,7 @@ const EventDetail = () => {
                 </>
               )}
             </div>
-          </div>
+          )}
 
           {/* Photos */}
           {filtered.length === 0 ? (
@@ -468,13 +365,6 @@ const EventDetail = () => {
                         <button className="size-7 rounded-lg glass grid place-items-center hover:bg-secondary transition-colors">
                           <MoreHorizontal className="size-3.5" />
                         </button>
-                      </div>
-                    </div>
-                    <div className="p-2.5">
-                      <p className="text-[11px] font-semibold truncate">{p.name}</p>
-                      <div className="flex items-center justify-between text-[10px] text-muted-foreground mt-0.5">
-                        <span>{p.date}</span>
-                        <span className="font-medium text-foreground/70">{p.size}</span>
                       </div>
                     </div>
                   </article>
