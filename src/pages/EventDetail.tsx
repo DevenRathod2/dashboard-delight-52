@@ -183,115 +183,132 @@ const EventDetail = () => {
       {/* Workspace: collections rail + photos */}
       <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
         {/* Collections rail */}
-        <aside className="rounded-3xl bg-card/60 border border-border/60 backdrop-blur-md shadow-card p-4 lg:sticky lg:top-4 self-start">
-          {/* Cover preview card */}
-          <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-secondary border border-border/60 mb-4">
-            <img src={active.cover} alt={active.name} className="size-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/30" />
+        <aside className="rounded-[2.5rem] bg-card/50 border border-border/60 backdrop-blur-2xl shadow-elevated flex flex-col lg:sticky lg:top-4 self-start overflow-hidden">
+          {/* Dynamic cover section */}
+          <div className="p-5">
+            <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden group shadow-elevated ring-1 ring-border/60">
+              <img
+                src={active.cover}
+                alt={active.name}
+                className="size-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-background/10" />
 
-            {/* Device toggle */}
-            <div className="absolute top-2.5 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
-              <button className="size-8 rounded-full bg-foreground/85 text-background grid place-items-center shadow-card" aria-label="Desktop preview">
-                <Monitor className="size-3.5" />
+              {/* Quick edit */}
+              <button
+                className="absolute top-4 right-4 p-2.5 bg-foreground/10 hover:bg-foreground/20 backdrop-blur-xl rounded-full border border-foreground/20 transition-all active:scale-90"
+                aria-label="Change cover image"
+              >
+                <Pencil className="size-4 text-foreground" />
               </button>
-              <button className="size-8 rounded-full bg-background/80 border border-border text-foreground grid place-items-center backdrop-blur-md" aria-label="Mobile preview">
-                <Smartphone className="size-3.5" />
-              </button>
+
+              {/* Floating stats */}
+              <div className="absolute bottom-5 left-5 right-5 flex gap-2">
+                <div className="flex-1 bg-foreground/10 backdrop-blur-md border border-foreground/10 rounded-2xl p-3 flex flex-col">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">Photos</span>
+                  <span className="text-xl font-medium text-foreground inline-flex items-center gap-1.5">
+                    <ImageIcon className="size-3.5 opacity-60" />
+                    {collections.reduce((a, c) => a + c.photos, 0)}
+                  </span>
+                </div>
+                <div className="flex-1 bg-card/40 backdrop-blur-md border border-border/40 rounded-2xl p-3 flex flex-col">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Videos</span>
+                  <span className="text-xl font-medium text-muted-foreground inline-flex items-center gap-1.5">
+                    <VideoIcon className="size-3.5 opacity-60" />
+                    00
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation & search */}
+          <div className="px-5 space-y-3">
+            <div className="relative group">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+              <Input
+                value={collectionsQuery}
+                onChange={(e) => setCollectionsQuery(e.target.value)}
+                placeholder="Find collection..."
+                className="pl-11 h-11 rounded-2xl bg-secondary/40 border-border/60 text-sm focus-visible:ring-primary/40"
+              />
             </div>
 
-            {/* Change cover pill */}
-            <button className="absolute left-1/2 -translate-x-1/2 bottom-3 inline-flex items-center gap-1.5 px-3.5 h-9 rounded-full bg-foreground/85 text-background text-xs font-semibold hover:bg-foreground transition-colors shadow-glow">
-              Change Cover Image <Pencil className="size-3" />
+            <button className="w-full flex items-center justify-between p-1 pl-4 bg-gradient-primary text-primary-foreground rounded-2xl font-medium transition-all group hover:opacity-95 shadow-glow">
+              <span className="text-sm">New Collection</span>
+              <div className="w-10 h-10 flex items-center justify-center bg-foreground/15 rounded-xl group-hover:scale-95 transition-transform">
+                <Plus className="size-5" />
+              </div>
             </button>
           </div>
 
-          {/* Counts */}
-          <div className="grid grid-cols-2 gap-2 mb-4">
-            <div className="rounded-2xl bg-secondary/50 border border-border/60 px-3 py-2">
-              <p className="font-display font-extrabold text-2xl leading-none tracking-tight">
-                {String(collections.reduce((a, c) => a + c.photos, 0)).padStart(2, "0")}
-              </p>
-              <p className="text-[11px] text-muted-foreground mt-1 inline-flex items-center gap-1">
-                <ImageIcon className="size-3" /> Photos
-              </p>
+          {/* Collections list */}
+          <nav className="flex-1 mt-6 px-3 pb-2 space-y-1.5">
+            <div className="px-4 mb-3 flex items-center justify-between">
+              <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground">Collections</h3>
+              <div className="h-px flex-1 ml-4 bg-border/60" />
             </div>
-            <div className="rounded-2xl bg-secondary/50 border border-border/60 px-3 py-2">
-              <p className="font-display font-extrabold text-2xl leading-none tracking-tight">00</p>
-              <p className="text-[11px] text-muted-foreground mt-1 inline-flex items-center gap-1">
-                <VideoIcon className="size-3" /> Videos
-              </p>
-            </div>
-          </div>
 
-          {/* Add collection */}
-          <button className="w-full h-10 rounded-full bg-foreground text-background text-sm font-semibold inline-flex items-center justify-center gap-1.5 hover:opacity-90 transition-opacity shadow-card mb-4">
-            <span className="size-4 rounded-full bg-background/15 grid place-items-center">
-              <Plus className="size-3" />
-            </span>
-            Add Collection
-          </button>
-
-          {/* Collections group */}
-          <details open className="group/coll">
-            <summary className="list-none cursor-pointer flex items-center gap-2 px-2 h-9 rounded-xl hover:bg-secondary/60 transition-colors">
-              <Folder className="size-4 text-muted-foreground" />
-              <span className="text-sm font-semibold flex-1">Collections</span>
-              <ChevronDown className="size-4 text-muted-foreground transition-transform group-open/coll:rotate-0 -rotate-90" />
-            </summary>
-
-            <div className="mt-1.5 space-y-0.5">
-              {/* "All" pseudo-item */}
-              <button
-                onClick={() => switchCollection(collectionsSeed[0].id)}
-                className={`w-full text-left flex items-center gap-2.5 px-2.5 h-10 rounded-xl border transition-all ${
-                  activeId === collectionsSeed[0].id
-                    ? "bg-warning/10 border-warning/40 text-foreground"
-                    : "border-transparent hover:bg-secondary/60"
-                }`}
-              >
-                <FileText className="size-4 text-muted-foreground" />
-                <span className="text-sm font-medium flex-1">All</span>
-              </button>
-
-              {filteredCollections.slice(1).map((c, i) => {
-                const isActive = c.id === activeId;
-                const icons = [Star, Sparkles, FileText, Folder];
-                const Icon = icons[i % icons.length];
+            {filteredCollections.map((c, i) => {
+              const isActive = c.id === activeId;
+              if (isActive) {
                 return (
                   <button
                     key={c.id}
                     onClick={() => switchCollection(c.id)}
-                    className={`group/item w-full text-left flex items-center gap-2.5 px-2.5 h-10 rounded-xl border transition-all ${
-                      isActive
-                        ? "bg-warning/10 border-warning/40"
-                        : "border-transparent hover:bg-secondary/60"
-                    }`}
+                    className="group relative w-full text-left flex items-center gap-4 p-4 bg-primary/10 rounded-[1.5rem] border border-primary/20 shadow-[0_0_20px_hsl(var(--primary)/0.08)]"
                   >
-                    <Icon className={`size-4 ${isActive ? "text-warning" : "text-muted-foreground"}`} />
-                    <span className="text-sm font-medium flex-1 truncate">{c.name}</span>
-                    {i === 1 && (
-                      <span className="px-1.5 py-0.5 rounded-md bg-success/15 text-success text-[10px] font-bold uppercase">
-                        New
-                      </span>
-                    )}
-                    <span className="hidden group-hover/item:inline-flex items-center gap-1 text-[11px] text-muted-foreground">
-                      <Pencil className="size-3" /> Edit
-                    </span>
+                    <div className="w-1 bg-primary absolute left-0 top-6 bottom-6 rounded-r-full" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-sm font-bold text-foreground truncate">{c.name}</p>
+                        <span className="text-[10px] font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                          Active
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-primary/70 mt-0.5 truncate">
+                        {c.photos} items{i === 0 ? " • Primary" : ""}
+                      </p>
+                    </div>
                   </button>
                 );
-              })}
-            </div>
-          </details>
+              }
+              return (
+                <button
+                  key={c.id}
+                  onClick={() => switchCollection(c.id)}
+                  className="group w-full text-left flex items-center gap-4 p-4 hover:bg-secondary/40 rounded-[1.5rem] transition-all border border-transparent hover:border-border/60"
+                >
+                  <div className="w-10 text-[10px] font-black text-muted-foreground/60 group-hover:text-muted-foreground transition-colors tracking-tighter uppercase">
+                    Vol {String(i).padStart(2, "0")}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors truncate">
+                        {c.name}
+                      </p>
+                      {c.selected > 0 && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_hsl(var(--primary)/0.6)] shrink-0" />
+                      )}
+                    </div>
+                    <p className="text-[11px] text-muted-foreground/70 mt-0.5">{c.photos} items</p>
+                  </div>
+                </button>
+              );
+            })}
+          </nav>
 
-          {/* Search inside rail */}
-          <div className="relative mt-4">
-            <Search className="size-3.5 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
-            <Input
-              value={collectionsQuery}
-              onChange={(e) => setCollectionsQuery(e.target.value)}
-              placeholder="Search collections..."
-              className="pl-8 h-9 rounded-xl bg-secondary/60 border-border/60 text-xs"
-            />
+          {/* Contextual footer */}
+          <div className="p-5 mt-auto">
+            <div className="bg-secondary/40 rounded-2xl p-4 border border-border/60">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Vault Usage</span>
+                <span className="text-[10px] font-bold text-foreground">45%</span>
+              </div>
+              <div className="h-1.5 w-full bg-background rounded-full overflow-hidden">
+                <div className="h-full w-[45%] bg-gradient-primary rounded-full shadow-[0_0_10px_hsl(var(--primary)/0.4)]" />
+              </div>
+            </div>
           </div>
         </aside>
 
