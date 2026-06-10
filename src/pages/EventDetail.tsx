@@ -11,7 +11,8 @@ import {
   ArrowLeft, Image as ImageIcon, CheckCircle2, HardDrive, CalendarDays,
   Palette, Share2, KeyRound, Eye, MoreHorizontal, Edit3, Plus, Copy,
   Search, Filter, Upload, Download, LayoutGrid, List, CheckSquare, X,
-  Folder, Heart, Trash2,
+  Folder, Heart, Trash2, ChevronDown, Monitor, Smartphone, FileText,
+  Star, Sparkles, Video as VideoIcon, Pencil,
 } from "lucide-react";
 import event1 from "@/assets/event-1.jpg";
 import event2 from "@/assets/event-2.jpg";
