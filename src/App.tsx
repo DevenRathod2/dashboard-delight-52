@@ -15,6 +15,7 @@ import Pricing from "./pages/Pricing.tsx";
 import Studio from "./pages/Studio.tsx";
 import Portfolio from "./pages/Portfolio.tsx";
 import EventDetail from "./pages/EventDetail.tsx";
+import EventSettings from "./pages/EventSettings.tsx";
 import CollectionPhotos from "./pages/CollectionPhotos.tsx";
 import Settings from "./pages/Settings.tsx";
 import FaceRecognition from "./pages/studio/FaceRecognition.tsx";
@@ -37,6 +38,7 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/events" element={<Events />} />
           <Route path="/events/:id" element={<EventDetail />} />
+          <Route path="/events/:id/settings" element={<EventSettings />} />
           <Route path="/events/:id/collections/:collectionId" element={<CollectionPhotos />} />
           <Route path="/clients" element={<Clients />} />
           <Route path="/leads" element={<Leads />} />
