@@ -11,7 +11,8 @@ import {
   ArrowLeft, Image as ImageIcon, CheckCircle2, HardDrive, CalendarDays,
   Palette, Share2, KeyRound, Eye, MoreHorizontal, Edit3, Plus, Copy,
   Search, Filter, Upload, Download, LayoutGrid, List, CheckSquare, X,
-  Folder, Heart, Trash2,
+  Folder, Heart, Trash2, ChevronDown, Monitor, Smartphone, FileText,
+  Star, Sparkles, Video as VideoIcon, Pencil,
 } from "lucide-react";
 import event1 from "@/assets/event-1.jpg";
 import event2 from "@/assets/event-2.jpg";
@@ -182,20 +183,108 @@ const EventDetail = () => {
       {/* Workspace: collections rail + photos */}
       <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
         {/* Collections rail */}
-        <aside className="rounded-3xl bg-card/60 border border-border/60 backdrop-blur-md shadow-card p-3 lg:sticky lg:top-4 self-start">
-          <div className="flex items-center justify-between px-2 pt-1 pb-3">
-            <div className="flex items-center gap-2">
-              <h2 className="font-display font-bold text-sm">Collections</h2>
-              <span className="size-5 rounded-full bg-warning text-warning-foreground text-[10px] font-bold grid place-items-center">
-                {collections.length}
-              </span>
+        <aside className="rounded-3xl bg-card/60 border border-border/60 backdrop-blur-md shadow-card p-4 lg:sticky lg:top-4 self-start">
+          {/* Cover preview card */}
+          <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-secondary border border-border/60 mb-4">
+            <img src={active.cover} alt={active.name} className="size-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/30" />
+
+            {/* Device toggle */}
+            <div className="absolute top-2.5 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
+              <button className="size-8 rounded-full bg-foreground/85 text-background grid place-items-center shadow-card" aria-label="Desktop preview">
+                <Monitor className="size-3.5" />
+              </button>
+              <button className="size-8 rounded-full bg-background/80 border border-border text-foreground grid place-items-center backdrop-blur-md" aria-label="Mobile preview">
+                <Smartphone className="size-3.5" />
+              </button>
             </div>
-            <button className="size-7 rounded-lg hover:bg-secondary grid place-items-center" aria-label="New collection">
-              <Plus className="size-3.5" />
+
+            {/* Change cover pill */}
+            <button className="absolute left-1/2 -translate-x-1/2 bottom-3 inline-flex items-center gap-1.5 px-3.5 h-9 rounded-full bg-foreground/85 text-background text-xs font-semibold hover:bg-foreground transition-colors shadow-glow">
+              Change Cover Image <Pencil className="size-3" />
             </button>
           </div>
 
-          <div className="relative px-1 mb-2">
+          {/* Counts */}
+          <div className="grid grid-cols-2 gap-2 mb-4">
+            <div className="rounded-2xl bg-secondary/50 border border-border/60 px-3 py-2">
+              <p className="font-display font-extrabold text-2xl leading-none tracking-tight">
+                {String(collections.reduce((a, c) => a + c.photos, 0)).padStart(2, "0")}
+              </p>
+              <p className="text-[11px] text-muted-foreground mt-1 inline-flex items-center gap-1">
+                <ImageIcon className="size-3" /> Photos
+              </p>
+            </div>
+            <div className="rounded-2xl bg-secondary/50 border border-border/60 px-3 py-2">
+              <p className="font-display font-extrabold text-2xl leading-none tracking-tight">00</p>
+              <p className="text-[11px] text-muted-foreground mt-1 inline-flex items-center gap-1">
+                <VideoIcon className="size-3" /> Videos
+              </p>
+            </div>
+          </div>
+
+          {/* Add collection */}
+          <button className="w-full h-10 rounded-full bg-foreground text-background text-sm font-semibold inline-flex items-center justify-center gap-1.5 hover:opacity-90 transition-opacity shadow-card mb-4">
+            <span className="size-4 rounded-full bg-background/15 grid place-items-center">
+              <Plus className="size-3" />
+            </span>
+            Add Collection
+          </button>
+
+          {/* Collections group */}
+          <details open className="group/coll">
+            <summary className="list-none cursor-pointer flex items-center gap-2 px-2 h-9 rounded-xl hover:bg-secondary/60 transition-colors">
+              <Folder className="size-4 text-muted-foreground" />
+              <span className="text-sm font-semibold flex-1">Collections</span>
+              <ChevronDown className="size-4 text-muted-foreground transition-transform group-open/coll:rotate-0 -rotate-90" />
+            </summary>
+
+            <div className="mt-1.5 space-y-0.5">
+              {/* "All" pseudo-item */}
+              <button
+                onClick={() => switchCollection(collectionsSeed[0].id)}
+                className={`w-full text-left flex items-center gap-2.5 px-2.5 h-10 rounded-xl border transition-all ${
+                  activeId === collectionsSeed[0].id
+                    ? "bg-warning/10 border-warning/40 text-foreground"
+                    : "border-transparent hover:bg-secondary/60"
+                }`}
+              >
+                <FileText className="size-4 text-muted-foreground" />
+                <span className="text-sm font-medium flex-1">All</span>
+              </button>
+
+              {filteredCollections.slice(1).map((c, i) => {
+                const isActive = c.id === activeId;
+                const icons = [Star, Sparkles, FileText, Folder];
+                const Icon = icons[i % icons.length];
+                return (
+                  <button
+                    key={c.id}
+                    onClick={() => switchCollection(c.id)}
+                    className={`group/item w-full text-left flex items-center gap-2.5 px-2.5 h-10 rounded-xl border transition-all ${
+                      isActive
+                        ? "bg-warning/10 border-warning/40"
+                        : "border-transparent hover:bg-secondary/60"
+                    }`}
+                  >
+                    <Icon className={`size-4 ${isActive ? "text-warning" : "text-muted-foreground"}`} />
+                    <span className="text-sm font-medium flex-1 truncate">{c.name}</span>
+                    {i === 1 && (
+                      <span className="px-1.5 py-0.5 rounded-md bg-success/15 text-success text-[10px] font-bold uppercase">
+                        New
+                      </span>
+                    )}
+                    <span className="hidden group-hover/item:inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+                      <Pencil className="size-3" /> Edit
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </details>
+
+          {/* Search inside rail */}
+          <div className="relative mt-4">
             <Search className="size-3.5 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
             <Input
               value={collectionsQuery}
@@ -203,57 +292,6 @@ const EventDetail = () => {
               placeholder="Search collections..."
               className="pl-8 h-9 rounded-xl bg-secondary/60 border-border/60 text-xs"
             />
-          </div>
-
-          <div className="space-y-1.5 max-h-[68vh] overflow-y-auto pr-1">
-            {filteredCollections.map((c) => {
-              const isActive = c.id === activeId;
-              return (
-                <button
-                  key={c.id}
-                  onClick={() => switchCollection(c.id)}
-                  className={`group w-full text-left rounded-2xl border transition-all p-2 flex items-center gap-3 ${
-                    isActive
-                      ? "bg-gradient-primary/15 border-primary/40 shadow-glow"
-                      : "bg-card/40 border-border/60 hover:bg-secondary/60"
-                  }`}
-                >
-                  <div className="relative size-12 rounded-xl overflow-hidden shrink-0">
-                    <img src={c.cover} alt={c.name} className="size-full object-cover" />
-                    {isActive && <div className="absolute inset-0 ring-2 ring-primary rounded-xl" />}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <p className={`text-sm font-semibold truncate ${isActive ? "gradient-text" : ""}`}>
-                        {c.name}
-                      </p>
-                      {c.active ? (
-                        <span className="size-1.5 rounded-full bg-success shrink-0" />
-                      ) : (
-                        <span className="size-1.5 rounded-full bg-muted-foreground/50 shrink-0" />
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2.5 text-[10px] text-muted-foreground mt-0.5">
-                      <span className="inline-flex items-center gap-0.5">
-                        <ImageIcon className="size-3" /> {c.photos}
-                      </span>
-                      <span className="inline-flex items-center gap-0.5">
-                        <CheckCircle2 className="size-3 text-success" /> {c.selected}
-                      </span>
-                      <span className="inline-flex items-center gap-0.5">
-                        <Heart className="size-3 text-destructive" /> {c.likes}
-                      </span>
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-
-            <button
-              className="w-full rounded-2xl border-2 border-dashed border-border/70 hover:border-primary/60 p-3 flex items-center gap-2 justify-center text-xs text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <Plus className="size-3.5" /> New collection
-            </button>
           </div>
         </aside>
 
