@@ -106,60 +106,88 @@ const EventDetail = () => {
       </div>
 
       {/* Workspace: collections rail + photos */}
-      <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
-        {/* Collections rail */}
-        <aside className="rounded-[2.5rem] bg-card/50 border border-border/60 backdrop-blur-2xl shadow-elevated flex flex-col lg:sticky lg:top-4 self-start overflow-hidden">
-          <div className="p-5">
-            <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden group shadow-elevated ring-1 ring-border/60">
-              <img
-                src={active.cover}
-                alt={active.name}
-                className="size-full object-cover transition-transform duration-700 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-background/10" />
-              <button
-                className="absolute top-4 right-4 p-2.5 bg-foreground/10 hover:bg-foreground/20 backdrop-blur-xl rounded-full border border-foreground/20 transition-all active:scale-90"
-                aria-label="Change cover image"
-              >
-                <Pencil className="size-4 text-foreground" />
-              </button>
-              <div className="absolute bottom-5 left-5 right-5 flex gap-2">
-                <div className="flex-1 bg-foreground/10 backdrop-blur-md border border-foreground/10 rounded-2xl p-3 flex flex-col">
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">Photos</span>
-                  <span className="text-xl font-medium text-foreground inline-flex items-center gap-1.5">
-                    <ImageIcon className="size-3.5 opacity-60" />
-                    {collections.reduce((a, c) => a + c.photos, 0)}
-                  </span>
-                </div>
-                <div className="flex-1 bg-card/40 backdrop-blur-md border border-border/40 rounded-2xl p-3 flex flex-col">
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Videos</span>
-                  <span className="text-xl font-medium text-muted-foreground inline-flex items-center gap-1.5">
-                    <VideoIcon className="size-3.5 opacity-60" />
-                    00
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="px-5 space-y-3">
-            <div className="relative group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-              <Input
-                value={collectionsQuery}
-                onChange={(e) => setCollectionsQuery(e.target.value)}
-                placeholder="Find collection..."
-                className="pl-11 h-11 rounded-2xl bg-secondary/40 border-border/60 text-sm focus-visible:ring-primary/40"
-              />
-            </div>
-
-            <button className="w-full flex items-center justify-between p-1 pl-4 bg-gradient-primary text-primary-foreground rounded-2xl font-medium transition-all group hover:opacity-95 shadow-glow">
-              <span className="text-sm">New Collection</span>
-              <div className="w-10 h-10 flex items-center justify-center bg-foreground/15 rounded-xl group-hover:scale-95 transition-transform">
-                <Plus className="size-5" />
-              </div>
+      <div className="grid grid-cols-1 lg:grid-cols-[232px_1fr] gap-6">
+        {/* Collections rail — light & compact */}
+        <aside className="lg:sticky lg:top-4 self-start">
+          {/* Compact cover */}
+          <div className="relative aspect-[4/3] rounded-xl overflow-hidden group ring-1 ring-border/60 mb-4">
+            <img
+              src={active.cover}
+              alt={active.name}
+              className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
+            <button
+              className="absolute top-2 right-2 size-7 grid place-items-center bg-background/70 hover:bg-background backdrop-blur rounded-md border border-border/60 transition-all"
+              aria-label="Change cover image"
+            >
+              <Pencil className="size-3 text-foreground" />
             </button>
+            <div className="absolute bottom-2 left-2 right-2 flex items-center gap-3 text-[11px] text-white">
+              <span className="inline-flex items-center gap-1"><ImageIcon className="size-3" />{collections.reduce((a, c) => a + c.photos, 0)}</span>
+              <span className="inline-flex items-center gap-1"><VideoIcon className="size-3" />0</span>
+            </div>
           </div>
+
+          {/* Search */}
+          <div className="relative mb-2">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+            <Input
+              value={collectionsQuery}
+              onChange={(e) => setCollectionsQuery(e.target.value)}
+              placeholder="Find collection..."
+              className="pl-9 h-9 rounded-lg bg-secondary/50 border-border/60 text-xs"
+            />
+          </div>
+
+          {/* New collection */}
+          <button className="w-full flex items-center justify-center gap-1.5 h-9 rounded-lg border border-dashed border-border hover:border-primary hover:text-primary hover:bg-primary/5 text-xs font-medium text-muted-foreground transition-colors mb-4">
+            <Plus className="size-3.5" /> New Collection
+          </button>
+
+          {/* List header */}
+          <div className="flex items-center justify-between px-1 mb-1.5">
+            <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Collections</h3>
+            <span className="text-[10px] text-muted-foreground">{filteredCollections.length}</span>
+          </div>
+
+          {/* List */}
+          <nav className="space-y-0.5">
+            {filteredCollections.map((c) => {
+              const isActive = c.id === activeId;
+              return (
+                <button
+                  key={c.id}
+                  onClick={() => switchCollection(c.id)}
+                  className={`group w-full text-left flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors ${
+                    isActive
+                      ? "bg-primary/10 text-foreground"
+                      : "hover:bg-secondary/60 text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <span className={`w-0.5 h-4 rounded-full ${isActive ? "bg-primary" : "bg-transparent"}`} />
+                  <span className="flex-1 min-w-0 truncate text-sm font-medium">{c.name}</span>
+                  {c.selected > 0 && (
+                    <span className="text-[10px] font-semibold text-primary">{c.selected}</span>
+                  )}
+                  <span className="text-[10px] text-muted-foreground tabular-nums">{c.photos}</span>
+                </button>
+              );
+            })}
+          </nav>
+
+          {/* Vault usage — minimal */}
+          <div className="mt-4 px-1">
+            <div className="flex justify-between text-[10px] text-muted-foreground mb-1">
+              <span>Vault</span>
+              <span>45%</span>
+            </div>
+            <div className="h-1 w-full bg-secondary rounded-full overflow-hidden">
+              <div className="h-full w-[45%] bg-primary rounded-full" />
+            </div>
+          </div>
+        </aside>
+
 
           <nav className="flex-1 mt-6 px-3 pb-2 space-y-1.5">
             <div className="px-4 mb-3 flex items-center justify-between">
