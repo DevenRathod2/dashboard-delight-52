@@ -49,7 +49,7 @@ const Index = () => {
               Track every shoot, ceremony and corporate event in one place. Share galleries, follow progress and delight your clients.
             </p>
           </div>
-          <Button size="lg" className="rounded-xl bg-gradient-primary hover:opacity-90 shadow-glow self-start md:self-auto">
+          <Button onClick={() => setCreateOpen(true)} size="lg" className="rounded-xl bg-gradient-primary hover:opacity-90 shadow-glow self-start md:self-auto">
             <Plus className="size-4 mr-1.5" /> Create Event
           </Button>
         </div>
