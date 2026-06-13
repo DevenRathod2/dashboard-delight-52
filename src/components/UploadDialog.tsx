@@ -6,12 +6,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
+import {
   UploadCloud, FolderUp, Image as ImageIcon, Video, FileUp,
   CheckCircle2, X, Loader2, Play, Pause, Sparkles, Gem,
   Wand2, ArrowLeft, Zap, Play as YoutubeIcon, Cloud, HardDrive, Link2,
+  FolderOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+
 
 export type UploadMode = "image" | "video";
 export type Quality = "compressed" | "original";
