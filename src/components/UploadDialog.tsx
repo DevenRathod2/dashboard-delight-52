@@ -277,12 +277,15 @@ export const UploadDialog = ({ open, onOpenChange, mode, collectionName, collect
   }, []);
 
   const activeSource = SOURCES.find((s) => s.key === source)!;
+  const activeCollection = collections?.find((c) => c.id === collectionId);
+  const displayCollectionName = activeCollection?.name ?? collectionName;
 
   const headerTitle =
     stage === "quality" ? "Choose upload quality"
     : stage === "processing" ? (isVideoSource ? "Processing videos…" : "Processing images…")
     : stage === "uploading" || stage === "done" ? (isVideoSource ? "Uploading videos" : "Uploading files")
-    : `Upload to ${collectionName ? `'${collectionName}'` : "Collection"}`;
+    : `Upload to ${displayCollectionName ? `'${displayCollectionName}'` : "Collection"}`;
+
 
   const headerDesc =
     stage === "quality" ? "Pick how your files are prepared before going to the cloud."
