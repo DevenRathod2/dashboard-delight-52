@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { EventCard, EventStatus } from "@/components/EventCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CreateEventDialog } from "@/components/CreateEventDialog";
 import { Plus, Search, SlidersHorizontal, ChevronDown, Calendar, TrendingUp, CheckCircle2, Clock } from "lucide-react";
 import event1 from "@/assets/event-1.jpg";
 import event2 from "@/assets/event-2.jpg";
