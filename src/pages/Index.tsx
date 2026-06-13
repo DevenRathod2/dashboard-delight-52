@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { EventCard, EventStatus } from "@/components/EventCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CreateEventDialog } from "@/components/CreateEventDialog";
 import { Plus, Search, SlidersHorizontal, ChevronDown, Calendar, TrendingUp, CheckCircle2, Clock } from "lucide-react";
 import event1 from "@/assets/event-1.jpg";
 import event2 from "@/assets/event-2.jpg";
@@ -29,6 +31,7 @@ const stats = [
 ];
 
 const Index = () => {
+  const [createOpen, setCreateOpen] = useState(false);
   return (
     <DashboardLayout>
       {/* Hero header */}
@@ -46,7 +49,7 @@ const Index = () => {
               Track every shoot, ceremony and corporate event in one place. Share galleries, follow progress and delight your clients.
             </p>
           </div>
-          <Button size="lg" className="rounded-xl bg-gradient-primary hover:opacity-90 shadow-glow self-start md:self-auto">
+          <Button onClick={() => setCreateOpen(true)} size="lg" className="rounded-xl bg-gradient-primary hover:opacity-90 shadow-glow self-start md:self-auto">
             <Plus className="size-4 mr-1.5" /> Create Event
           </Button>
         </div>
@@ -110,6 +113,8 @@ const Index = () => {
           </div>
         ))}
       </div>
+
+      <CreateEventDialog open={createOpen} onOpenChange={setCreateOpen} />
     </DashboardLayout>
   );
 };
