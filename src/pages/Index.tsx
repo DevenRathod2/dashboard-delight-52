@@ -31,6 +31,7 @@ const stats = [
 ];
 
 const Index = () => {
+  const [createOpen, setCreateOpen] = useState(false);
   return (
     <DashboardLayout>
       {/* Hero header */}
