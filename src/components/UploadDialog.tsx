@@ -44,14 +44,20 @@ const formatBytes = (b: number) => {
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 
+export type UploadCollectionOption = { id: string; name: string; cover?: string; photos?: number };
+
 interface Props {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   /** Optional initial source — kept for backwards compatibility */
   mode?: UploadMode;
   collectionName?: string;
+  collections?: UploadCollectionOption[];
+  defaultCollectionId?: string;
+  onCollectionChange?: (id: string) => void;
   onComplete?: (files: File[]) => void;
 }
+
 
 const SOURCES: {
   key: Source; group: "Upload" | "Embed" | "Import";
