@@ -43,6 +43,7 @@ interface CreateEventDialogProps {
 }
 
 export interface EventFormData {
+  clientId?: string;
   clientFirstName: string;
   clientLastName: string;
   clientPhone: string;
@@ -54,6 +55,23 @@ export interface EventFormData {
   description?: string;
   coverImage?: File | null;
 }
+
+interface ExistingClient {
+  id: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email?: string;
+  events: number;
+}
+
+const EXISTING_CLIENTS: ExistingClient[] = [
+  { id: "c1", firstName: "Deven", lastName: "Rathod", phone: "8788887676", email: "deven@studio.in", events: 1 },
+  { id: "c2", firstName: "Yash", lastName: "Nasale", phone: "+918788887373", email: "yash@studio.in", events: 1 },
+  { id: "c3", firstName: "Amit", lastName: "Chaluripagaar", phone: "8788887373", email: "amit@studio.in", events: 1 },
+  { id: "c4", firstName: "Priya", lastName: "Sharma", phone: "9988776655", email: "priya@studio.in", events: 3 },
+  { id: "c5", firstName: "Rohan", lastName: "Mehta", phone: "9822582423", email: "rohan@studio.in", events: 2 },
+];
 
 const initial: EventFormData = {
   clientFirstName: "",
