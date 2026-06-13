@@ -6,12 +6,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
+import {
   UploadCloud, FolderUp, Image as ImageIcon, Video, FileUp,
   CheckCircle2, X, Loader2, Play, Pause, Sparkles, Gem,
   Wand2, ArrowLeft, Zap, Play as YoutubeIcon, Cloud, HardDrive, Link2,
+  FolderOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+
 
 export type UploadMode = "image" | "video";
 export type Quality = "compressed" | "original";
@@ -39,14 +44,20 @@ const formatBytes = (b: number) => {
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 
+export type UploadCollectionOption = { id: string; name: string; cover?: string; photos?: number };
+
 interface Props {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   /** Optional initial source — kept for backwards compatibility */
   mode?: UploadMode;
   collectionName?: string;
+  collections?: UploadCollectionOption[];
+  defaultCollectionId?: string;
+  onCollectionChange?: (id: string) => void;
   onComplete?: (files: File[]) => void;
 }
+
 
 const SOURCES: {
   key: Source; group: "Upload" | "Embed" | "Import";
@@ -61,7 +72,7 @@ const SOURCES: {
   { key: "gdrive",  group: "Import", label: "Google Drive", icon: HardDrive, tint: "from-emerald-400 to-yellow-400" },
 ];
 
-export const UploadDialog = ({ open, onOpenChange, mode, collectionName, onComplete }: Props) => {
+export const UploadDialog = ({ open, onOpenChange, mode, collectionName, collections, defaultCollectionId, onCollectionChange, onComplete }: Props) => {
   const { toast } = useToast();
   const [items, setItems] = useState<Item[]>([]);
   const [dragging, setDragging] = useState(false);
@@ -69,6 +80,10 @@ export const UploadDialog = ({ open, onOpenChange, mode, collectionName, onCompl
   const [quality, setQuality] = useState<Quality>("compressed");
   const [source, setSource] = useState<Source>(mode === "video" ? "videos" : "images");
   const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [collectionId, setCollectionId] = useState<string | undefined>(
+    defaultCollectionId ?? collections?.[0]?.id,
+  );
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const folderInputRef = useRef<HTMLInputElement>(null);
   const timersRef = useRef<Record<string, number>>({});
@@ -80,7 +95,10 @@ export const UploadDialog = ({ open, onOpenChange, mode, collectionName, onCompl
   useEffect(() => {
     if (!open) return;
     setSource(mode === "video" ? "videos" : "images");
-  }, [mode, open]);
+    setCollectionId(defaultCollectionId ?? collections?.[0]?.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, open, defaultCollectionId]);
+
 
   // Cleanup on close
   useEffect(() => {
@@ -259,12 +277,15 @@ export const UploadDialog = ({ open, onOpenChange, mode, collectionName, onCompl
   }, []);
 
   const activeSource = SOURCES.find((s) => s.key === source)!;
+  const activeCollection = collections?.find((c) => c.id === collectionId);
+  const displayCollectionName = activeCollection?.name ?? collectionName;
 
   const headerTitle =
     stage === "quality" ? "Choose upload quality"
     : stage === "processing" ? (isVideoSource ? "Processing videos…" : "Processing images…")
     : stage === "uploading" || stage === "done" ? (isVideoSource ? "Uploading videos" : "Uploading files")
-    : `Upload to ${collectionName ? `'${collectionName}'` : "Collection"}`;
+    : `Upload to ${displayCollectionName ? `'${displayCollectionName}'` : "Collection"}`;
+
 
   const headerDesc =
     stage === "quality" ? "Pick how your files are prepared before going to the cloud."
@@ -353,6 +374,42 @@ export const UploadDialog = ({ open, onOpenChange, mode, collectionName, onCompl
             {/* SELECT */}
             {stage === "select" && (
               <>
+                {collections && collections.length > 0 && (
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-3 rounded-2xl border border-border/60 bg-card/60">
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="size-8 rounded-lg bg-primary/10 text-primary grid place-items-center">
+                        <FolderOpen className="size-4" />
+                      </span>
+                      <div className="leading-tight">
+                        <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Destination</p>
+                        <p className="text-xs text-muted-foreground">Pick a collection for these files</p>
+                      </div>
+                    </div>
+                    <div className="flex-1 sm:max-w-xs sm:ml-auto">
+                      <Select
+                        value={collectionId}
+                        onValueChange={(v) => { setCollectionId(v); onCollectionChange?.(v); }}
+                      >
+                        <SelectTrigger className="rounded-xl bg-background/60 border-border/60 h-10">
+                          <SelectValue placeholder="Select a collection" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {collections.map((c) => (
+                            <SelectItem key={c.id} value={c.id}>
+                              <span className="flex items-center gap-2">
+                                <span className="font-medium">{c.name}</span>
+                                {typeof c.photos === "number" && (
+                                  <span className="text-[10px] text-muted-foreground">· {c.photos} photos</span>
+                                )}
+                              </span>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                )}
+
                 {(source === "images" || source === "videos" || source === "folder") && (
                   <>
                     <div

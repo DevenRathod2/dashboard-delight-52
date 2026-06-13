@@ -371,7 +371,15 @@ const EventDetail = () => {
         </section>
       </div>
 
-      <UploadDialog open={uploadOpen} onOpenChange={setUploadOpen} mode="image" />
+      <UploadDialog
+        open={uploadOpen}
+        onOpenChange={setUploadOpen}
+        mode="image"
+        collections={collections.map((c) => ({ id: c.id, name: c.name, cover: c.cover, photos: c.photos }))}
+        defaultCollectionId={activeId}
+        onCollectionChange={setActiveId}
+      />
+
     </DashboardLayout>
   );
 };
