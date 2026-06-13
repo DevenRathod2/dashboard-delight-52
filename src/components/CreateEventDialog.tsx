@@ -91,6 +91,9 @@ export const CreateEventDialog = ({ open, onOpenChange, onCreated }: CreateEvent
   const [form, setForm] = useState<EventFormData>(initial);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [clientMode, setClientMode] = useState<"existing" | "new">("existing");
+  const [clientSearch, setClientSearch] = useState("");
+  const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const set = <K extends keyof EventFormData>(k: K, v: EventFormData[K]) =>
@@ -100,6 +103,9 @@ export const CreateEventDialog = ({ open, onOpenChange, onCreated }: CreateEvent
     setForm(initial);
     setStep(1);
     setCoverPreview(null);
+    setClientMode("existing");
+    setClientSearch("");
+    setSelectedClientId(null);
   };
 
   const handleClose = (o: boolean) => {
@@ -122,10 +128,34 @@ export const CreateEventDialog = ({ open, onOpenChange, onCreated }: CreateEvent
     setCoverPreview(url);
   };
 
+  const pickClient = (c: ExistingClient) => {
+    setSelectedClientId(c.id);
+    setForm((p) => ({
+      ...p,
+      clientId: c.id,
+      clientFirstName: c.firstName,
+      clientLastName: c.lastName,
+      clientPhone: c.phone,
+      clientEmail: c.email ?? "",
+    }));
+  };
+
+  const filteredClients = EXISTING_CLIENTS.filter((c) => {
+    const q = clientSearch.trim().toLowerCase();
+    if (!q) return true;
+    return (
+      `${c.firstName} ${c.lastName}`.toLowerCase().includes(q) ||
+      c.phone.toLowerCase().includes(q) ||
+      (c.email ?? "").toLowerCase().includes(q)
+    );
+  });
+
   const canNext =
-    form.clientFirstName.trim() &&
-    form.clientLastName.trim() &&
-    form.clientPhone.trim();
+    clientMode === "existing"
+      ? !!selectedClientId
+      : form.clientFirstName.trim() &&
+        form.clientLastName.trim() &&
+        form.clientPhone.trim();
 
   const canCreate =
     form.eventName.trim() && form.eventType.trim() && form.eventDate.trim() && form.location.trim();
