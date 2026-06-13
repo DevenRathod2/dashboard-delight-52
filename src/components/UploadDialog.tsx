@@ -72,7 +72,7 @@ const SOURCES: {
   { key: "gdrive",  group: "Import", label: "Google Drive", icon: HardDrive, tint: "from-emerald-400 to-yellow-400" },
 ];
 
-export const UploadDialog = ({ open, onOpenChange, mode, collectionName, onComplete }: Props) => {
+export const UploadDialog = ({ open, onOpenChange, mode, collectionName, collections, defaultCollectionId, onCollectionChange, onComplete }: Props) => {
   const { toast } = useToast();
   const [items, setItems] = useState<Item[]>([]);
   const [dragging, setDragging] = useState(false);
@@ -80,6 +80,10 @@ export const UploadDialog = ({ open, onOpenChange, mode, collectionName, onCompl
   const [quality, setQuality] = useState<Quality>("compressed");
   const [source, setSource] = useState<Source>(mode === "video" ? "videos" : "images");
   const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [collectionId, setCollectionId] = useState<string | undefined>(
+    defaultCollectionId ?? collections?.[0]?.id,
+  );
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const folderInputRef = useRef<HTMLInputElement>(null);
   const timersRef = useRef<Record<string, number>>({});
