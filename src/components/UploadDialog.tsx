@@ -95,7 +95,10 @@ export const UploadDialog = ({ open, onOpenChange, mode, collectionName, collect
   useEffect(() => {
     if (!open) return;
     setSource(mode === "video" ? "videos" : "images");
-  }, [mode, open]);
+    setCollectionId(defaultCollectionId ?? collections?.[0]?.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, open, defaultCollectionId]);
+
 
   // Cleanup on close
   useEffect(() => {
