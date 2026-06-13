@@ -113,6 +113,8 @@ const Index = () => {
           </div>
         ))}
       </div>
+
+      <CreateEventDialog open={createOpen} onOpenChange={setCreateOpen} />
     </DashboardLayout>
   );
 };
