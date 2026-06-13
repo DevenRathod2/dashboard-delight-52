@@ -27,7 +27,10 @@ import {
   Mail,
   MapPin,
   Phone,
+  Search,
   User,
+  UserPlus,
+  Users,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
