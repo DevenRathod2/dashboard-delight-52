@@ -233,37 +233,148 @@ export const CreateEventDialog = ({ open, onOpenChange, onCreated }: CreateEvent
         {/* Body */}
         <div className="p-6 max-h-[60vh] overflow-y-auto">
           {step === 1 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="First name" icon={User} required>
-                <Input
-                  value={form.clientFirstName}
-                  onChange={(e) => set("clientFirstName", e.target.value)}
-                  placeholder="Aanya"
-                />
-              </Field>
-              <Field label="Last name" required>
-                <Input
-                  value={form.clientLastName}
-                  onChange={(e) => set("clientLastName", e.target.value)}
-                  placeholder="Sharma"
-                />
-              </Field>
-              <Field label="WhatsApp / Phone" icon={Phone} required>
-                <Input
-                  value={form.clientPhone}
-                  onChange={(e) => set("clientPhone", e.target.value)}
-                  placeholder="+91 98765 43210"
-                  inputMode="tel"
-                />
-              </Field>
-              <Field label="Email" icon={Mail} hint="Optional">
-                <Input
-                  type="email"
-                  value={form.clientEmail}
-                  onChange={(e) => set("clientEmail", e.target.value)}
-                  placeholder="client@email.com"
-                />
-              </Field>
+            <div className="space-y-4">
+              {/* Segmented toggle */}
+              <div className="inline-flex p-1 bg-secondary/60 border border-border/60 rounded-xl w-full sm:w-auto">
+                {([
+                  { id: "existing", label: "Existing client", icon: Users },
+                  { id: "new", label: "New client", icon: UserPlus },
+                ] as const).map((opt) => {
+                  const active = clientMode === opt.id;
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => {
+                        setClientMode(opt.id);
+                        if (opt.id === "new") {
+                          setSelectedClientId(null);
+                          setForm((p) => ({
+                            ...p,
+                            clientId: undefined,
+                            clientFirstName: "",
+                            clientLastName: "",
+                            clientPhone: "",
+                            clientEmail: "",
+                          }));
+                        }
+                      }}
+                      className={cn(
+                        "flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 h-9 rounded-lg text-xs font-medium transition-all",
+                        active
+                          ? "bg-background shadow-sm text-foreground border border-border/60"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      <opt.icon className="size-3.5" />
+                      {opt.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {clientMode === "existing" ? (
+                <div className="space-y-3">
+                  <div className="relative">
+                    <Search className="size-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+                    <Input
+                      value={clientSearch}
+                      onChange={(e) => setClientSearch(e.target.value)}
+                      placeholder="Search by name, phone, or email..."
+                      className="pl-9 h-10 rounded-lg"
+                    />
+                  </div>
+                  <div className="max-h-[320px] overflow-y-auto rounded-xl border border-border/60 divide-y divide-border/40 bg-secondary/20">
+                    {filteredClients.length === 0 ? (
+                      <div className="p-8 text-center text-sm text-muted-foreground">
+                        No clients found.{" "}
+                        <button
+                          type="button"
+                          className="text-primary font-medium hover:underline"
+                          onClick={() => setClientMode("new")}
+                        >
+                          Add new
+                        </button>
+                      </div>
+                    ) : (
+                      filteredClients.map((c) => {
+                        const active = selectedClientId === c.id;
+                        return (
+                          <button
+                            key={c.id}
+                            type="button"
+                            onClick={() => pickClient(c)}
+                            className={cn(
+                              "w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors",
+                              active
+                                ? "bg-primary/10"
+                                : "hover:bg-secondary/50",
+                            )}
+                          >
+                            <div className={cn(
+                              "size-9 rounded-lg grid place-items-center text-xs font-bold shrink-0",
+                              active
+                                ? "bg-gradient-primary text-primary-foreground shadow-glow"
+                                : "bg-secondary text-foreground",
+                            )}>
+                              {c.firstName[0]}{c.lastName[0]}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-medium truncate">
+                                {c.firstName} {c.lastName}
+                              </p>
+                              <p className="text-[11px] text-muted-foreground truncate">
+                                {c.phone}{c.email ? ` · ${c.email}` : ""}
+                              </p>
+                            </div>
+                            <span className="text-[10px] text-muted-foreground shrink-0">
+                              {c.events} {c.events === 1 ? "event" : "events"}
+                            </span>
+                            {active && (
+                              <div className="size-5 rounded-full bg-primary text-primary-foreground grid place-items-center shrink-0">
+                                <Check className="size-3" />
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Field label="First name" icon={User} required>
+                    <Input
+                      value={form.clientFirstName}
+                      onChange={(e) => set("clientFirstName", e.target.value)}
+                      placeholder="Aanya"
+                    />
+                  </Field>
+                  <Field label="Last name" required>
+                    <Input
+                      value={form.clientLastName}
+                      onChange={(e) => set("clientLastName", e.target.value)}
+                      placeholder="Sharma"
+                    />
+                  </Field>
+                  <Field label="WhatsApp / Phone" icon={Phone} required>
+                    <Input
+                      value={form.clientPhone}
+                      onChange={(e) => set("clientPhone", e.target.value)}
+                      placeholder="+91 98765 43210"
+                      inputMode="tel"
+                    />
+                  </Field>
+                  <Field label="Email" icon={Mail} hint="Optional">
+                    <Input
+                      type="email"
+                      value={form.clientEmail}
+                      onChange={(e) => set("clientEmail", e.target.value)}
+                      placeholder="client@email.com"
+                    />
+                  </Field>
+                </div>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
