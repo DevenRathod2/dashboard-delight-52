@@ -374,6 +374,42 @@ export const UploadDialog = ({ open, onOpenChange, mode, collectionName, collect
             {/* SELECT */}
             {stage === "select" && (
               <>
+                {collections && collections.length > 0 && (
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-3 rounded-2xl border border-border/60 bg-card/60">
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="size-8 rounded-lg bg-primary/10 text-primary grid place-items-center">
+                        <FolderOpen className="size-4" />
+                      </span>
+                      <div className="leading-tight">
+                        <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Destination</p>
+                        <p className="text-xs text-muted-foreground">Pick a collection for these files</p>
+                      </div>
+                    </div>
+                    <div className="flex-1 sm:max-w-xs sm:ml-auto">
+                      <Select
+                        value={collectionId}
+                        onValueChange={(v) => { setCollectionId(v); onCollectionChange?.(v); }}
+                      >
+                        <SelectTrigger className="rounded-xl bg-background/60 border-border/60 h-10">
+                          <SelectValue placeholder="Select a collection" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {collections.map((c) => (
+                            <SelectItem key={c.id} value={c.id}>
+                              <span className="flex items-center gap-2">
+                                <span className="font-medium">{c.name}</span>
+                                {typeof c.photos === "number" && (
+                                  <span className="text-[10px] text-muted-foreground">· {c.photos} photos</span>
+                                )}
+                              </span>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                )}
+
                 {(source === "images" || source === "videos" || source === "folder") && (
                   <>
                     <div
