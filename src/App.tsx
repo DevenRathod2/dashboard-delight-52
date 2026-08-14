@@ -54,6 +54,7 @@ const App = () => (
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/agent" element={<Agent />} />
+          <Route path="/agent/:threadId" element={<Agent />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
