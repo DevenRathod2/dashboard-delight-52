@@ -40,7 +40,11 @@ Deno.serve(async (req) => {
 
     const body = await req.json();
     const parsed = z
-      .object({ sessionId: z.string().min(1).max(200), messages: z.array(z.any()) })
+      .object({
+        sessionId: z.string().min(1).max(200),
+        threadId: z.string().uuid(),
+        messages: z.array(z.any()),
+      })
       .safeParse(body);
     if (!parsed.success) {
       return new Response(JSON.stringify({ error: parsed.error.flatten().fieldErrors }), {
@@ -48,7 +52,7 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const { sessionId, messages } = parsed.data;
+    const { sessionId, threadId, messages } = parsed.data;
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -60,11 +64,30 @@ Deno.serve(async (req) => {
     if (last?.role === "user") {
       const { error } = await supabase.from("agent_messages").insert({
         session_id: sessionId,
+        thread_id: threadId,
         message_id: last.id ?? null,
         role: "user",
         parts: last.parts ?? [],
       });
       if (error) console.error("persist user message failed:", error.message);
+
+      // Title the thread from its first user message
+      const firstText = (last.parts ?? [])
+        .filter((p: { type?: string }) => p?.type === "text")
+        .map((p: { text?: string }) => p.text ?? "")
+        .join(" ")
+        .trim();
+      const { data: thread } = await supabase
+        .from("agent_threads")
+        .select("id, title")
+        .eq("id", threadId)
+        .maybeSingle();
+      const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
+      if (firstText && (!thread || thread.title === "New chat")) {
+        patch.title = firstText.slice(0, 60);
+      }
+      const { error: tErr } = await supabase.from("agent_threads").update(patch).eq("id", threadId);
+      if (tErr) console.error("update thread failed:", tErr.message);
     }
 
     const gateway = createLovableAiGatewayProvider(apiKey);
@@ -269,6 +292,7 @@ Deno.serve(async (req) => {
       onFinish: async ({ responseMessage }) => {
         const { error } = await supabase.from("agent_messages").insert({
           session_id: sessionId,
+          thread_id: threadId,
           message_id: responseMessage.id ?? null,
           role: "assistant",
           parts: responseMessage.parts ?? [],
