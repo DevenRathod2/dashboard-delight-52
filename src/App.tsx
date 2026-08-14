@@ -18,6 +18,7 @@ import EventDetail from "./pages/EventDetail.tsx";
 import EventSettings from "./pages/EventSettings.tsx";
 import CollectionPhotos from "./pages/CollectionPhotos.tsx";
 import Settings from "./pages/Settings.tsx";
+import Agent from "./pages/Agent.tsx";
 import FaceRecognition from "./pages/studio/FaceRecognition.tsx";
 import SmartSelections from "./pages/studio/SmartSelections.tsx";
 import MotionReels from "./pages/studio/MotionReels.tsx";
@@ -52,6 +53,7 @@ const App = () => (
           <Route path="/studio/color-grading" element={<ColorGrading />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/agent" element={<Agent />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
