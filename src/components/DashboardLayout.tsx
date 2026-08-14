@@ -1,5 +1,5 @@
 import { ReactNode, useState } from "react";
-import { LayoutDashboard, Users, MessageSquare, Calendar, CreditCard, Camera, FolderOpen, Settings, LogOut, HelpCircle, Search, Bell, Sun, Moon, Receipt, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { LayoutDashboard, Users, MessageSquare, Calendar, CreditCard, Camera, FolderOpen, Settings, LogOut, HelpCircle, Search, Bell, Sun, Moon, Receipt, PanelLeftClose, PanelLeftOpen, Bot } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", to: "/dashboard" },
+  { icon: Bot, label: "Lens Agent", to: "/agent" },
   { icon: Users, label: "Clients", to: "/clients" },
   { icon: MessageSquare, label: "Leads", to: "/leads" },
   { icon: Calendar, label: "Events", to: "/events" },
