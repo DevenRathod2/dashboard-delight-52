@@ -291,6 +291,7 @@ const AgentChat = ({
 
     sendMessage({ text: value });
     setInput("");
+    setTimeout(onThreadsChanged, 1500);
     requestAnimationFrame(focus);
   };
 
