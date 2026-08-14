@@ -217,7 +217,7 @@ const AgentChat = ({
           ) : (
             messages.map((m) => (
               <Message from={m.role} key={m.id}>
-                <MessageContent>
+                <MessageContent className={m.role === "assistant" ? "w-full max-w-2xl" : undefined}>
                   {m.parts.map((part, i) => {
                     if (part.type === "text") {
                       return m.role === "assistant" ? (
