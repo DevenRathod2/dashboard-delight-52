@@ -1,15 +1,23 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
-import { Trash2, Sparkle } from "lucide-react";
+import {
+  Sparkle,
+  UserPlus,
+  CalendarPlus,
+  ImageUp,
+  Link2,
+  Receipt,
+  Gauge,
+  FolderPlus,
+} from "lucide-react";
 import { DashboardLayout } from "@/components/DashboardLayout";
-import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   Conversation,
   ConversationContent,
-  ConversationEmptyState,
   ConversationScrollButton,
 } from "@/components/ai-elements/conversation";
 import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
@@ -22,6 +30,8 @@ import {
 import { Tool, ToolContent, ToolHeader, ToolInput } from "@/components/ai-elements/tool";
 import { Shimmer } from "@/components/ai-elements/shimmer";
 import { ToolResultCard } from "@/components/agent/ToolResultCard";
+import { ThreadRail, type AgentThread } from "@/components/agent/ThreadRail";
+import { cn } from "@/lib/utils";
 import lensLogo from "@/assets/agent-lens.png";
 
 const SESSION_KEY = "lensly.agent.session";
@@ -51,26 +61,96 @@ const TOOL_LABELS: Record<string, string> = {
   list_events: "Listing events",
 };
 
-const SUGGESTIONS = [
-  "Create a wedding event for a new client, Aanya & Rohan, on 24 Apr",
-  "Upload 250 photos to the Day 1 collection and share the gallery",
-  "Draft an invoice for Deven Rathod: wedding package ₹1,20,000 + album ₹18,000",
-  "How much storage and AI credit have I used this month?",
+const QUICK_ACTIONS = [
+  {
+    icon: UserPlus,
+    label: "Add client",
+    hint: "New CRM contact",
+    tint: "from-sky-500 to-cyan-400",
+    prompt: "Add a new client: Aanya Mehra, +91 98200 11223, aanya@example.com",
+  },
+  {
+    icon: CalendarPlus,
+    label: "Create event",
+    hint: "Shoot & date",
+    tint: "from-primary to-primary-glow",
+    prompt: "Create a wedding event for Aanya & Rohan on 24 Apr in Udaipur",
+  },
+  {
+    icon: FolderPlus,
+    label: "New collection",
+    hint: "Album inside event",
+    tint: "from-violet-500 to-fuchsia-400",
+    prompt: "Add a 'Day 1 — Haldi' collection to the Aanya & Rohan wedding",
+  },
+  {
+    icon: ImageUp,
+    label: "Upload photos",
+    hint: "Bulk media",
+    tint: "from-emerald-500 to-teal-400",
+    prompt: "Upload 250 photos to the Day 1 collection",
+  },
+  {
+    icon: Link2,
+    label: "Share gallery",
+    hint: "Client link",
+    tint: "from-amber-500 to-orange-400",
+    prompt: "Share the client gallery for the Aanya & Rohan wedding with a PIN",
+  },
+  {
+    icon: Receipt,
+    label: "Create invoice",
+    hint: "Bill a client",
+    tint: "from-rose-500 to-pink-400",
+    prompt: "Draft an invoice for Deven Rathod: wedding package ₹1,20,000 + album ₹18,000",
+  },
+  {
+    icon: Gauge,
+    label: "Usage report",
+    hint: "Storage & credits",
+    tint: "from-indigo-500 to-blue-400",
+    prompt: "How much storage and AI credit have I used this month?",
+  },
 ];
 
 const Agent = () => {
   const sessionId = useMemo(getSessionId, []);
+  const { threadId } = useParams();
+  const navigate = useNavigate();
+  const [threads, setThreads] = useState<AgentThread[]>([]);
   const [initial, setInitial] = useState<UIMessage[] | null>(null);
-  const [input, setInput] = useState("");
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const loadThreads = useCallback(async () => {
+    const { data, error } = await supabase
+      .from("agent_threads")
+      .select("id, title, pinned, updated_at")
+      .eq("session_id", sessionId)
+      .order("updated_at", { ascending: false });
+    if (error) {
+      console.error("load threads failed", error);
+      return;
+    }
+    setThreads((data ?? []) as AgentThread[]);
+  }, [sessionId]);
+
+  // Every chat lives at its own URL; a fresh id is minted for /agent.
+  useEffect(() => {
+    if (!threadId) navigate(`/agent/${crypto.randomUUID()}`, { replace: true });
+  }, [threadId, navigate]);
 
   useEffect(() => {
+    loadThreads();
+  }, [loadThreads]);
+
+  useEffect(() => {
+    if (!threadId) return;
     let active = true;
+    setInitial(null);
     (async () => {
       const { data, error } = await supabase
         .from("agent_messages")
         .select("id, message_id, role, parts")
-        .eq("session_id", sessionId)
+        .eq("thread_id", threadId)
         .order("created_at", { ascending: true });
       if (!active) return;
       if (error) {
@@ -89,47 +169,78 @@ const Agent = () => {
     return () => {
       active = false;
     };
-  }, [sessionId]);
+  }, [threadId]);
 
-  if (!initial) {
-    return (
-      <DashboardLayout>
-        <div className="h-[60vh] grid place-items-center text-sm text-muted-foreground">
-          Waking up your studio assistant…
-        </div>
-      </DashboardLayout>
-    );
-  }
+  const pinThread = async (t: AgentThread) => {
+    setThreads((prev) => prev.map((x) => (x.id === t.id ? { ...x, pinned: !t.pinned } : x)));
+    const { error } = await supabase.from("agent_threads").update({ pinned: !t.pinned }).eq("id", t.id);
+    if (error) {
+      toast.error("Could not update pin");
+      loadThreads();
+    }
+  };
+
+  const deleteThread = async (id: string) => {
+    const { error } = await supabase.from("agent_threads").delete().eq("id", id);
+    if (error) {
+      toast.error("Could not delete chat");
+      return;
+    }
+    setThreads((prev) => prev.filter((t) => t.id !== id));
+    toast.success("Chat deleted");
+    if (id === threadId) navigate(`/agent/${crypto.randomUUID()}`, { replace: true });
+  };
 
   return (
     <DashboardLayout>
-      <AgentChat
-        key={sessionId}
-        sessionId={sessionId}
-        initialMessages={initial}
-        input={input}
-        setInput={setInput}
-        textareaRef={textareaRef}
-      />
+      <div className="flex gap-4 h-[calc(100vh-8rem)]">
+        <ThreadRail
+          threads={threads}
+          activeId={threadId}
+          onNew={() => navigate(`/agent/${crypto.randomUUID()}`)}
+          onOpen={(id) => navigate(`/agent/${id}`)}
+          onPin={pinThread}
+          onDelete={deleteThread}
+        />
+
+        {!threadId || !initial ? (
+          <div className="flex-1 grid place-items-center text-sm text-muted-foreground">
+            Waking up your studio assistant…
+          </div>
+        ) : (
+          <AgentChat
+            key={threadId}
+            sessionId={sessionId}
+            threadId={threadId}
+            initialMessages={initial}
+            knownThread={threads.some((t) => t.id === threadId)}
+            onThreadsChanged={loadThreads}
+          />
+        )}
+      </div>
     </DashboardLayout>
   );
 };
 
 const AgentChat = ({
   sessionId,
+  threadId,
   initialMessages,
-  input,
-  setInput,
-  textareaRef,
+  knownThread,
+  onThreadsChanged,
 }: {
   sessionId: string;
+  threadId: string;
   initialMessages: UIMessage[];
-  input: string;
-  setInput: (v: string) => void;
-  textareaRef: React.MutableRefObject<HTMLTextAreaElement | null>;
+  knownThread: boolean;
+  onThreadsChanged: () => void;
 }) => {
-  const { messages, sendMessage, status, stop, setMessages, error } = useChat({
-    id: sessionId,
+  const [input, setInput] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const createdRef = useRef(knownThread);
+
+  const { messages, sendMessage, status, stop, error } = useChat({
+    id: threadId,
     messages: initialMessages,
     transport: new DefaultChatTransport({
       api: `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/agent-chat`,
@@ -138,7 +249,7 @@ const AgentChat = ({
         apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
       },
-      body: { sessionId },
+      body: { sessionId, threadId },
     }),
   });
 
@@ -146,11 +257,13 @@ const AgentChat = ({
 
   useEffect(() => {
     focus();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (status === "ready") focus();
+    if (status === "ready") {
+      focus();
+      onThreadsChanged();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
 
@@ -158,117 +271,164 @@ const AgentChat = ({
     if (error) toast.error(error.message || "The assistant could not respond. Please try again.");
   }, [error]);
 
-  const send = (text: string) => {
+  const send = async (text: string) => {
     const value = text.trim();
     if (!value || status === "streaming" || status === "submitted") return;
+
+    if (!createdRef.current) {
+      createdRef.current = true;
+      const { error: insErr } = await supabase
+        .from("agent_threads")
+        .insert({ id: threadId, session_id: sessionId, title: "New chat" });
+      if (insErr && insErr.code !== "23505") {
+        createdRef.current = false;
+        console.error("create thread failed", insErr);
+        toast.error("Could not start this chat.");
+        return;
+      }
+      onThreadsChanged();
+    }
+
     sendMessage({ text: value });
     setInput("");
+    setTimeout(onThreadsChanged, 1500);
     requestAnimationFrame(focus);
   };
 
-  const clearChat = async () => {
-    const { error: delError } = await supabase.from("agent_messages").delete().eq("session_id", sessionId);
-    if (delError) {
-      toast.error("Could not clear the conversation.");
-      return;
-    }
-    setMessages([]);
-    toast.success("Conversation cleared");
-    focus();
-  };
+  const empty = messages.length === 0;
 
-  return (
-    <div className="flex flex-col h-[calc(100vh-8rem)]">
-      {/* Header */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-aurora border border-border/60 px-5 py-4 mb-4 shrink-0">
-        <div className="absolute -top-16 -right-10 size-56 rounded-full bg-primary/20 blur-3xl pointer-events-none" />
-        <div className="relative flex items-center gap-3">
-          <img src={lensLogo} alt="Lens assistant" width={512} height={512} className="size-11 rounded-2xl shadow-glow" />
-          <div className="min-w-0">
-            <h1 className="font-display font-bold text-lg leading-none">
-              Lens <span className="gradient-text">Studio Agent</span>
+  const composer = (
+    <PromptInput
+      className={cn("rounded-2xl shadow-card", empty ? "w-full" : "mt-4 shrink-0")}
+      onSubmit={(message) => send(message.text ?? input)}
+    >
+      <PromptInputTextarea
+        ref={textareaRef}
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        placeholder="Ask Lens to create an event, upload photos, share a gallery, bill a client…"
+      />
+      <PromptInputFooter className="justify-end">
+        <PromptInputSubmit
+          status={status}
+          onStop={stop}
+          disabled={!input.trim() && status !== "streaming" && status !== "submitted"}
+        />
+      </PromptInputFooter>
+    </PromptInput>
+  );
+
+  if (empty) {
+    return (
+      <div className="flex-1 min-w-0 rounded-3xl border border-border/60 bg-card/40 backdrop-blur-xl overflow-y-auto">
+        <div className="mx-auto flex min-h-full w-full max-w-2xl flex-col justify-center px-5 py-10">
+          <div className="text-center">
+            <img
+              src={lensLogo}
+              alt="Lens studio assistant"
+              width={512}
+              height={512}
+              className="mx-auto size-14 rounded-2xl shadow-glow"
+            />
+            <h1 className="mt-4 font-display text-2xl font-bold">
+              What should we get <span className="gradient-text">done today?</span>
             </h1>
-            <p className="text-xs text-muted-foreground mt-1.5">
-              Runs your studio by chat — clients, events, uploads, galleries and invoices.
+            <p className="mt-2 text-sm text-muted-foreground">
+              Lens runs your studio by chat — clients, events, uploads, galleries and invoices.
             </p>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={clearChat}
-            disabled={messages.length === 0}
-            className="ml-auto rounded-xl text-muted-foreground shrink-0"
-          >
-            <Trash2 className="size-4 mr-1.5" /> Clear
-          </Button>
+
+          <div className="mt-6">{composer}</div>
+
+          <div className="mt-5 grid gap-2 sm:grid-cols-2">
+            {QUICK_ACTIONS.map((a) => (
+              <button
+                key={a.label}
+                onClick={() => send(a.prompt)}
+                className="group flex items-center gap-3 rounded-2xl border border-border/60 bg-background/40 px-3 py-2.5 text-left transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:bg-secondary/60"
+              >
+                <span
+                  className={cn(
+                    "grid size-8 shrink-0 place-items-center rounded-xl bg-gradient-to-br text-white shadow-card",
+                    a.tint,
+                  )}
+                >
+                  <a.icon className="size-4" />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-xs font-medium">{a.label}</span>
+                  <span className="block truncate text-[11px] text-muted-foreground">{a.hint}</span>
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
+    );
+  }
 
-      {/* Transcript */}
+  return (
+    <div className="flex flex-1 min-w-0 flex-col">
       <Conversation className="flex-1 min-h-0 rounded-3xl border border-border/60 bg-card/40 backdrop-blur-xl">
-        <ConversationContent className="px-4 py-6 md:px-8">
-          {messages.length === 0 ? (
-            <ConversationEmptyState
-              className="min-h-[40vh]"
-              icon={<img src={lensLogo} alt="" width={512} height={512} loading="lazy" className="size-14" />}
-              title="What should we get done today?"
-              description="Ask Lens to set up a shoot, upload media, share a gallery or bill a client."
-            />
-          ) : (
-            messages.map((m) => (
-              <Message from={m.role} key={m.id}>
-                <MessageContent className={m.role === "assistant" ? "w-full max-w-2xl" : undefined}>
-                  {m.parts.map((part, i) => {
-                    if (part.type === "text") {
-                      return m.role === "assistant" ? (
-                        <MessageResponse key={i}>{part.text}</MessageResponse>
-                      ) : (
-                        <p key={i} className="whitespace-pre-wrap">{part.text}</p>
-                      );
-                    }
+        <ConversationContent className="mx-auto w-full max-w-3xl px-4 py-6 md:px-8">
+          {messages.map((m) => (
+            <Message from={m.role} key={m.id}>
+              <MessageContent className={m.role === "assistant" ? "w-full max-w-2xl" : undefined}>
+                {m.parts.map((part, i) => {
+                  if (part.type === "text") {
+                    return m.role === "assistant" ? (
+                      <MessageResponse key={i}>{part.text}</MessageResponse>
+                    ) : (
+                      <p key={i} className="whitespace-pre-wrap">
+                        {part.text}
+                      </p>
+                    );
+                  }
 
-                    if (part.type.startsWith("tool-")) {
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      const p = part as any;
-                      const name = part.type.replace("tool-", "");
-                      const label = TOOL_LABELS[name] ?? name;
+                  if (part.type.startsWith("tool-")) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const p = part as any;
+                    const name = part.type.replace("tool-", "");
+                    const label = TOOL_LABELS[name] ?? name;
 
-                      if (p.state === "output-available") {
-                        return (
-                          <div key={i} className="space-y-2 w-full">
-                            <ToolResultCard name={name} output={p.output} />
-                            <Tool defaultOpen={false}>
-                              <ToolHeader type={part.type as never} state={p.state} title={label} />
-                              <ToolContent>
-                                <ToolInput input={p.input} />
-                              </ToolContent>
-                            </Tool>
-                          </div>
-                        );
-                      }
-
-                      if (p.state === "output-error") {
-                        return (
-                          <div key={i} className="rounded-xl border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive">
-                            {label} failed: {p.errorText}
-                          </div>
-                        );
-                      }
-
+                    if (p.state === "output-available") {
                       return (
-                        <div key={i} className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <Sparkle className="size-3.5 animate-pulse text-primary" />
-                          <Shimmer>{`${label}…`}</Shimmer>
+                        <div key={i} className="space-y-2 w-full">
+                          <ToolResultCard name={name} output={p.output} />
+                          <Tool defaultOpen={false}>
+                            <ToolHeader type={part.type as never} state={p.state} title={label} />
+                            <ToolContent>
+                              <ToolInput input={p.input} />
+                            </ToolContent>
+                          </Tool>
                         </div>
                       );
                     }
 
-                    return null;
-                  })}
-                </MessageContent>
-              </Message>
-            ))
-          )}
+                    if (p.state === "output-error") {
+                      return (
+                        <div
+                          key={i}
+                          className="rounded-xl border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive"
+                        >
+                          {label} failed: {p.errorText}
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div key={i} className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Sparkle className="size-3.5 animate-pulse text-primary" />
+                        <Shimmer>{`${label}…`}</Shimmer>
+                      </div>
+                    );
+                  }
+
+                  return null;
+                })}
+              </MessageContent>
+            </Message>
+          ))}
 
           {status === "submitted" && (
             <Message from="assistant">
@@ -281,40 +441,7 @@ const AgentChat = ({
         <ConversationScrollButton />
       </Conversation>
 
-      {/* Suggestions */}
-      {messages.length === 0 && (
-        <div className="flex flex-wrap gap-2 mt-4 shrink-0">
-          {SUGGESTIONS.map((s) => (
-            <button
-              key={s}
-              onClick={() => send(s)}
-              className="text-xs text-left rounded-xl border border-border/60 bg-card/60 backdrop-blur-md px-3 py-2 hover:bg-secondary transition-colors"
-            >
-              {s}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Composer */}
-      <PromptInput
-        className="mt-4 shrink-0 rounded-2xl"
-        onSubmit={(message) => send(message.text ?? input)}
-      >
-        <PromptInputTextarea
-          ref={textareaRef}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask Lens to create an event, upload photos, share a gallery, bill a client…"
-        />
-        <PromptInputFooter className="justify-end">
-          <PromptInputSubmit
-            status={status}
-            onStop={stop}
-            disabled={!input.trim() && status !== "streaming" && status !== "submitted"}
-          />
-        </PromptInputFooter>
-      </PromptInput>
+      <div className="mx-auto w-full max-w-3xl">{composer}</div>
     </div>
   );
 };

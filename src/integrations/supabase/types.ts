@@ -22,6 +22,7 @@ export type Database = {
           parts: Json
           role: string
           session_id: string
+          thread_id: string | null
         }
         Insert: {
           created_at?: string
@@ -30,6 +31,7 @@ export type Database = {
           parts?: Json
           role: string
           session_id: string
+          thread_id?: string | null
         }
         Update: {
           created_at?: string
@@ -38,6 +40,42 @@ export type Database = {
           parts?: Json
           role?: string
           session_id?: string
+          thread_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_messages_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "agent_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agent_threads: {
+        Row: {
+          created_at: string
+          id: string
+          pinned: boolean
+          session_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          pinned?: boolean
+          session_id: string
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          pinned?: boolean
+          session_id?: string
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
